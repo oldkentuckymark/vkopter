@@ -1,8 +1,5 @@
 #version 450
-
-layout(location = 0) in vec4 posCoord;
-layout(location = 1) in vec4 texCoord;
-layout(location = 2) in vec4 normCoord;
+#extension GL_GOOGLE_include_directive : enable
 
 layout(location = 3) flat out uint idx;
 
@@ -165,6 +162,16 @@ void main()
 {
     idx = uint(gl_InstanceIndex);
     RenderObject ro = render_objects[idx];
+
+    const uint idx = uint(gl_InstanceIndex);
+	const uint vdx = uint(gl_VertexIndex);
+    
+    //const uint gdi = uint(gl_BaseVertex);
+    //const uint gdi = uint(gl_BaseInstance);
+
+	//select proper vert from instanceindex and vertex id
+	vec4 posCoord = positions[vdx];
+    vec4 normCoord = normals[vdx];
 
     fragPos = vec3(model_matricies[ro.matrix] * posCoord);
     //interpolatedNormal = normCoord.xyz;

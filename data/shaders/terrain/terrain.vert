@@ -1,8 +1,6 @@
 #version 450
 
-layout(location = 0) in vec4 posCoord;
-layout(location = 1) in vec4 texCoord;
-layout(location = 2) in vec4 normCoord;
+#extension GL_GOOGLE_include_directive : enable
 
 layout(location = 3) flat out uint idx;
 
@@ -179,28 +177,23 @@ void main()
 	const uint numVerts = 36;
 	const uint numIndicies = 36;
 
-	const float boxWidth = 1.0;
-	const float boxDepth = 1.0;
-	const float boxHeight = 1.0;
-
 	const uint idx = uint(gl_InstanceIndex);
 	const uint vdx = uint(gl_VertexIndex);
 
 	const uint tile = tiles[idx];
 	const uint alt = alts[idx];
-	const mat4 m = mat4(1.0);
 
 	//select proper vert from instanceindex and vertex id
 	vec4 newVert = positions[(tile*numVerts)+vdx];
-	newVert.x += (mod(idx, terrainWidth) * boxWidth) - 0.0;
-	newVert.z += 255.0 - (floor(idx / terrainWidth) * boxDepth);
-	newVert.y -= alt*boxHeight;
+	newVert.x += (mod(idx, terrainWidth));
+	newVert.z += terrainHeight - ( floor(idx / terrainWidth) );//255.0 - (floor(idx / terrainWidth) * boxDepth);
+	newVert.y -= alt;
 	const vec4 newNorm = normals[(tile*numVerts)+vdx];
 
-    fragPos = vec3(m * posCoord);
+    fragPos = newVert.xyz;
     //interpolatedNormal = normCoord.xyz;
-    interpolatedNormal = mat3(transpose(inverse(m))) * newNorm.xyz;
+    interpolatedNormal = mat3(transpose(inverse(mat4(1.0)))) * newNorm.xyz;
 
-	gl_Position = cameras[0].proj * cameras[0].view * m * newVert;
+	gl_Position = cameras[0].proj * cameras[0].view * newVert;
 
 }

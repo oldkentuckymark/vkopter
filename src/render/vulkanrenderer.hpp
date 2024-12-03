@@ -115,20 +115,23 @@ public:
 
 
         //first 14 meshes MUST be terrain
-        createMesh("data/meshes/terrain-00.gltf");
-        createMesh("data/meshes/terrain-01.gltf");
-        createMesh("data/meshes/terrain-02.gltf");
-        createMesh("data/meshes/terrain-03.gltf");
-        createMesh("data/meshes/terrain-04.gltf");
-        createMesh("data/meshes/terrain-05.gltf");
-        createMesh("data/meshes/terrain-06.gltf");
-        createMesh("data/meshes/terrain-07.gltf");
-        createMesh("data/meshes/terrain-08.gltf");
-        createMesh("data/meshes/terrain-09.gltf");
-        createMesh("data/meshes/terrain-10.gltf");
-        createMesh("data/meshes/terrain-11.gltf");
-        createMesh("data/meshes/terrain-12.gltf");
-        createMesh("data/meshes/terrain-13.gltf");
+        createMesh("data/meshes/00.gltf");
+        createMesh("data/meshes/01.gltf");
+        createMesh("data/meshes/02.gltf");
+        createMesh("data/meshes/03.gltf");
+        createMesh("data/meshes/04.gltf");
+        createMesh("data/meshes/05.gltf");
+        createMesh("data/meshes/06.gltf");
+        createMesh("data/meshes/07.gltf");
+        createMesh("data/meshes/08.gltf");
+        createMesh("data/meshes/09.gltf");
+        createMesh("data/meshes/10.gltf");
+        createMesh("data/meshes/11.gltf");
+        createMesh("data/meshes/12.gltf");
+        createMesh("data/meshes/13.gltf");
+
+        //15th mesh aka meshes_[14] must be the water
+        createMesh("data/meshes/plane256.gltf");
 
 
     }
@@ -246,18 +249,19 @@ public:
 
 
         //first 14 meshes must always be terrain
-        for(uint32_t m = 0; m <= 13; ++m)
-        {
-            positions.insert(positions.end(), meshes_[m].getPositions().begin(),meshes_[m].getPositions().end());
-            texcoords.insert(texcoords.end(), meshes_[m].getTexCoords().begin(),meshes_[m].getTexCoords().end());
-            normals.insert(normals.end(), meshes_[m].getNormals().begin(),meshes_[m].getNormals().end());
-            indicies.insert(indicies.end(), meshes_[m].getIndicies().begin(), meshes_[m].getIndicies().end());
-        }
-        //insert water mesh as 15th aka meshes[14]
-        positions.insert(positions.end(),water_mesh_.getPositions().begin(),water_mesh_.getPositions().end());
-        texcoords.insert(texcoords.end(), water_mesh_.getTexCoords().begin(), water_mesh_.getTexCoords().end());
-        normals.insert(normals.end(), water_mesh_.getNormals().begin(), water_mesh_.getNormals().end());
-        indicies.insert(indicies.end(), water_mesh_.getIndicies().begin(), water_mesh_.getIndicies().end());
+         for(uint32_t m = 0; m <= 13; ++m)
+         {
+             positions.insert(positions.end(), meshes_[m].getPositions().begin(),meshes_[m].getPositions().end());
+             texcoords.insert(texcoords.end(), meshes_[m].getTexCoords().begin(),meshes_[m].getTexCoords().end());
+             normals.insert(normals.end(), meshes_[m].getNormals().begin(),meshes_[m].getNormals().end());
+             indicies.insert(indicies.end(), meshes_[m].getIndicies().begin(), meshes_[m].getIndicies().end());
+         }
+
+        //insert water mesh as 15th aka meshes_[14]
+        positions.insert(positions.end(),meshes_[14].getPositions().begin(), meshes_[14].getPositions().end());
+        texcoords.insert(texcoords.end(), meshes_[14].getTexCoords().begin(), meshes_[14].getTexCoords().end());
+        normals.insert(normals.end(), meshes_[14].getNormals().begin(), meshes_[14].getNormals().end());
+        indicies.insert(indicies.end(), meshes_[14].getIndicies().begin(), meshes_[14].getIndicies().end());
 
         for(auto & meshCount : meshCounts)
         {
@@ -310,10 +314,7 @@ public:
         cmdbuf.bindVertexBuffers(1,texcoords_buffers_[currentFrame], {0});
         cmdbuf.bindVertexBuffers(2,normals_buffers_[currentFrame], {0});
 
-
-        //cmdbuf.drawIndexed(meshes_[0].getIndicies().size(),1,0,0,0);
         cmdbuf.drawIndexedIndirect(draw_commands_buffers_[currentFrame],0,diics.size(),sizeof(vk::DrawIndexedIndirectCommand));
-
         if(twimtbp_) {device_.waitIdle();}
 
         //terrain rendering
@@ -329,6 +330,8 @@ public:
         cmdbuf.bindVertexBuffers(2,normals_buffers_[currentFrame], {0});
 
         cmdbuf.drawIndexed(TERRAIN_MESH_INDEX_COUNT,terrain_width_*terrain_height_,0,0,0);
+
+
         if(twimtbp_) {device_.waitIdle();}
 
         //water rendering
@@ -344,7 +347,7 @@ public:
         cmdbuf.bindVertexBuffers(2,normals_buffers_[currentFrame], {0});
 
         //draw water here!!!!!!
-        cmdbuf.draw(water_mesh_.getPositions().size(), 1, TERRAIN_MESH_VERT_COUNT * 14, 0);
+        //cmdbuf.draw(water_mesh_.getPositions().size(), 1, TERRAIN_MESH_VERT_COUNT * 14, 0);
 
 
         if(twimtbp_) {device_.waitIdle();}
@@ -643,9 +646,9 @@ private:
         std::array<vk::PipelineShaderStageCreateInfo,4> shaderStages = {vertPSSCI, fragPSSCI, tcsPSSCI, tesPSSCI};
 
 
-        vk::PipelineVertexInputStateCreateInfo pvisci;
-        pvisci.setVertexAttributeDescriptions(Mesh::vertexInputAttribureDescriptions);
-        pvisci.setVertexBindingDescriptions(Mesh::vertexInputBindingDescriptions);
+        vk::PipelineVertexInputStateCreateInfo pvisci {};
+        pvisci.setVertexAttributeDescriptionCount(0);
+        pvisci.setVertexBindingDescriptionCount(0);
 
         vk::PipelineInputAssemblyStateCreateInfo piasci;
         piasci.setTopology(vk::PrimitiveTopology::eTriangleList);
@@ -840,7 +843,7 @@ private:
     VulkanWindow& window_;
 
     constexpr size_t static MAX_OBJECTS_COUNT = 32768;
-    constexpr size_t static MAX_VERTEX_COUNT = 32768;
+    constexpr size_t static MAX_VERTEX_COUNT = 1048576;
     uint32_t const MAX_FRAMES_IN_FLIGHT;
 
 
@@ -876,7 +879,6 @@ private:
 
     fixed_vector<Mesh,1024> meshes_;
     std::vector<uint32_t> mesh_handles_;
-    WaterMesh water_mesh_;
 
     fixed_vector<RenderObject,MAX_OBJECTS_COUNT> render_objects_;
     fixed_vector<Material, MAX_OBJECTS_COUNT> materials_;

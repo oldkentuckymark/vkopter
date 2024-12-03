@@ -1,9 +1,5 @@
 #version 450
 
-layout(location = 0) in vec4 posCoord;
-layout(location = 1) in vec4 texCoord;
-layout(location = 2) in vec4 normCoord;
-
 layout(location = 0) flat out uint idx_out;
 
 layout(location = 1) out vec3 interpolatedNormal_out;
@@ -171,11 +167,11 @@ void main()
 
     //fragPos_out = vec3(mat4(1.0) * (posCoord + vec4(0.0,0.0,0.0,0.0)));
     
-    interpolatedNormal_out = normCoord.xyz;
+    interpolatedNormal_out = vec3(0.0,0.0,0.0);//normCoord.xyz;
 
-    interpolatedNormal_out = mat3(transpose(inverse(mat4(1.0)))) * normCoord.xyz;
+    interpolatedNormal_out = mat3(transpose(inverse(mat4(1.0)))) * vec3(0.0,0.0,0.0);//normCoord.xyz;
 
 	//gl_Position =  cameras[0].proj * cameras[0].view * mat4(1.0) * (posCoord + vec4(0.0,-8.0,0.0,0.0));
-    gl_Position = posCoord;
+    gl_Position = vec4(0.0,0.0,0.0,0.0);//posCoord;
 }
 

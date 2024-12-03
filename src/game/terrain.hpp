@@ -36,7 +36,7 @@ public:
             //c = 0 for red, 1 for green, 2 for blue (assuming RGB format)
             if(x >= surf->w || y >= surf->h) {return 0;}
             auto* pix = std::bit_cast<uint8_t*>(surf->pixels);
-            return pix[3 * (y * surf -> w + x) + c];
+            return pix[3 * ((y) * surf -> w + x) + c];
         };
 
         width_ = surf->w;
@@ -46,7 +46,7 @@ public:
         termap_.resize(width_,height_);
 
 
-        for(uint32_t y = 0; y < height_; ++y)
+        for(int32_t y = 0; y < height_; ++y)
         {
             for(uint32_t x = 0; x < width_; ++x)
             {

@@ -6,6 +6,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/transform2.hpp>
 
 namespace vkopter::game
 {
@@ -15,56 +16,7 @@ class Camera
 public:
     Camera()
     {
-        update();
-    }
-
-    auto addPitch(float const s) -> void
-    {
-        glm::vec3 const rightVector = glm::cross(dir_,up_);
-        dir_ = glm::rotate(dir_,-s,rightVector);
-        update();
-    }
-
-    auto addYaw(float const s) -> void
-    {
-        dir_ = glm::rotate(dir_,-s,up_);
-        update();
-    }
-
-    auto addRoll(float const s) -> void
-    {
-        up_ = glm::rotate(up_, -s, {0.0f,0.0f,1.0f});
-        update();
-    }
-
-    auto moveForward(float const s) -> void
-    {
-        position_ += (dir_ * s);
-        update();
-    }
-
-    auto moveRight(float const s) -> void
-    {
-        glm::vec3 const rightVector = glm::cross(dir_,up_);
-        position_ -= (rightVector * s);
-        update();
-    }
-
-    auto moveUp(float const s) -> void
-    {
-        position_ -= (up_ * s);
-        update();
-    }
-
-    auto panRight(float const s) -> void
-    {
-        dir_ = glm::rotate(dir_,-s,{0.0f,-1.0f,0.0f});
-        update();
-    }
-
-    auto floatUp(float const s) -> void
-    {
-        position_ += (glm::vec3{0.0f,-1.0f,0.0f}*s);
+        //lookAt({0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,1.0f,0.0f});
         update();
     }
 
@@ -76,16 +28,6 @@ public:
         near_ = near;
         far_ = far;
         update();
-    }
-
-
-    auto lookAt(glm::vec3 position, glm::vec3 target, glm::vec3 up) -> void
-    {
-        position_ = position;
-        dir_ = glm::normalize(target - position);
-        up_ = up;
-        update();
-
     }
 
     [[nodiscard]] auto getView() -> glm::mat4
@@ -103,16 +45,19 @@ public:
 private:
     auto update() -> void
     {
-        view_ = glm::lookAt(position_,position_ + dir_,up_);
-        proj_ = glm::perspectiveRH_ZO(fov_,
+        //view_ = glm::lookAt( glm::vec3{0.0f,0.0f,420.0f}, {0.0f,0.0f,0.0f}, {0.0f,1.0f,0.0f});
+        view_ = glm::mat4(1.0f);
+        view_ = glm::translate(view_, glm::vec3{-12.0f,3.0f,21.0f});
+        proj_ = glm::perspectiveLH_ZO(fov_,
                                          width_/
                                          height_,
                                          near_,
                                          far_);
-        proj_ = glm::scale(proj_,{-0.01f,0.01f,0.01f});
-        //proj_ = glm::scale(proj_, {1.0f,});
-    }
+        //proj_ = glm::rotate(proj_, 10.0f,glm::vec3(1.0f,0.0f,0.0f) );
+        proj_ = glm::scale(proj_,{1.0f,1.0f,1.0f});
 
+    }
+public:
     glm::mat4 view_;
     glm::mat4 proj_;
     glm::vec3 position_ = {0.0f,0.0f,0.0f}; float padding0;
