@@ -47,7 +47,7 @@ private:
     {
         //view_ = glm::lookAt( glm::vec3{0.0f,0.0f,420.0f}, {0.0f,0.0f,0.0f}, {0.0f,1.0f,0.0f});
         view_ = glm::mat4(1.0f);
-        view_ = glm::translate(view_, glm::vec3{-12.0f,3.0f,21.0f});
+        view_ = glm::translate(view_, glm::vec3{0.0f,2.0f,4.0f});
         proj_ = glm::perspectiveLH_ZO(fov_,
                                          width_/
                                          height_,
