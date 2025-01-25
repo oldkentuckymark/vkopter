@@ -39,6 +39,8 @@ set (CITYTEST_IMAGES
 	data/citygen/img/11.bmp
 	data/citygen/img/12.bmp
 
+        data/textures/texture.png
+
 )
 
 set (CONFIG_FILES
@@ -52,7 +54,8 @@ set (HEIGHTMAP_IMAGES
 )
 
 set (MESH_FILES
-	data/meshes/monkey.gltf
+        data/meshes/untitled.gltf
+
 	data/meshes/terrain-00.gltf
 	data/meshes/terrain-01.gltf
 	data/meshes/terrain-02.gltf
@@ -67,6 +70,21 @@ set (MESH_FILES
 	data/meshes/terrain-11.gltf
 	data/meshes/terrain-12.gltf
 	data/meshes/terrain-13.gltf
+
+        data/meshes/road-00.gltf
+        data/meshes/road-01.gltf
+        data/meshes/road-02.gltf
+        data/meshes/road-03.gltf
+        data/meshes/road-04.gltf
+        data/meshes/road-05.gltf
+        data/meshes/road-06.gltf
+        data/meshes/road-07.gltf
+        data/meshes/road-08.gltf
+        data/meshes/road-09.gltf
+        data/meshes/road-10.gltf
+        data/meshes/road-11.gltf
+        data/meshes/road-12.gltf
+        data/meshes/road-13.gltf
 
 )
 

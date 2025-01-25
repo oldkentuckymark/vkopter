@@ -47,7 +47,7 @@ auto main(int argc, char **argv) -> int
     mat0ref.diffuse = {1.0f, 0.0f, 0.0f, 1.0f};
 
     auto &matx0ref = renderer.getModelMatrixRef(matx0);
-    matx0ref = glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    matx0ref = glm::translate(glm::mat4(1.0f), {0.0f, -4.0f, 0.0f});
 
     auto &cam0ref = renderer.getCameraRef(cam0);
 
@@ -89,7 +89,7 @@ auto main(int argc, char **argv) -> int
 
 
         renderer.startNextFrame();
-        std::cout << "x: " << cam0ref.position_.x << "  y: " << cam0ref.position_.y << " z: " << cam0ref.position_.z << "\n";
+        //std::cout << "x: " << cam0ref.position_.x << "  y: " << cam0ref.position_.y << " z: " << cam0ref.position_.z << "\n";
     }
 
     //renderer.removeRenderObject(ro0ref);
