@@ -63,29 +63,62 @@ auto main(int argc, char **argv) -> int
     auto ro0ref = renderer.createRenderObject(ro0);
 
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
     bool running = true;
     while (running) {
         SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
+        while (SDL_PollEvent(&e))
+        {
+            if(e.type == SDL_QUIT)
+            {
                 running = false;
-            } else if (e.type == SDL_WINDOWEVENT) {
-                if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+            }
+            else if(e.type == SDL_WINDOWEVENT)
+            {
+                if(e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                     window.recreate_swapchain();
                     renderer.releaseSwapChainResources();
                     renderer.initSwapChainResources();
                     //cam0ref.setPerspective(45.0f,window.getWidth(),window.getHeight());
                 }
             }
+            else if(e.type == SDL_MOUSEMOTION)
+            {
+                cam0ref.yaw_ -= (float)e.motion.xrel / 200.f;
+                cam0ref.pitch_ -= (float)e.motion.yrel / 200.f;
+            }
         }
 
         uint8_t const *const keys = SDL_GetKeyboardState(nullptr);
-        if (keys[SDL_SCANCODE_ESCAPE]) {
+        if (keys[SDL_SCANCODE_ESCAPE])
+        {
             running = false;
         }
-        if (keys[SDL_SCANCODE_W]) {
-            //cam0ref.moveForward(0.1f);
+        if (keys[SDL_SCANCODE_W])
+        {
+            cam0ref.move({0.0f,0.0f,1.0f});
         }
+        if (keys[SDL_SCANCODE_S])
+        {
+            cam0ref.move({0.0f,0.0f,-1.0f});
+        }
+        if (keys[SDL_SCANCODE_A])
+        {
+            cam0ref.move({-1.0f,0.0f,0.0f});
+        }
+        if (keys[SDL_SCANCODE_D])
+        {
+            cam0ref.move({1.0f,0.0f,0.0f});
+        }
+        if (keys[SDL_SCANCODE_R])
+        {
+            cam0ref.move({0.0f,-1.0f,0.0f});
+        }
+        if (keys[SDL_SCANCODE_F])
+        {
+            cam0ref.move({0.0f,1.0f,0.0f});
+        }
+        cam0ref.update();
 
 
         renderer.startNextFrame();
