@@ -55,7 +55,7 @@ private:
                                          far_);
         //proj_ = glm::rotate(proj_, 10.0f,glm::vec3(1.0f,0.0f,0.0f) );
         //proj_ = glm::scale(proj_,{1.0f,1.0f,1.0f});
-        view_ = glm::lookAtLH(glm::vec3{0.0f,-5.0f,-10.0f},glm::vec3{0.0f,-5.0f,10.0f},glm::vec3{0.0f,1.0f,0.0f});
+        view_ = glm::lookAtLH(glm::vec3{25.0f,-10.0f,-30.0f},glm::vec3{25.0f,0.0f,0.0f},glm::vec3{0.0f,1.0f,0.0f});
 
     }
 public:

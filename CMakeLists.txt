@@ -21,6 +21,7 @@ file(GLOB_RECURSE JOLT_SOURCES CONFIGURE_DEPENDS "src/Jolt/*.cpp")
 set(LICENCES
 	src/game/entt/LICENSE
 	src/Jolt/LICENSE
+	LICENSE
 )
 
 

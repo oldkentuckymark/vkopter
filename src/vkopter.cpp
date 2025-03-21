@@ -92,7 +92,7 @@ auto main(int argc, char **argv) -> int
         //std::cout << "x: " << cam0ref.position_.x << "  y: " << cam0ref.position_.y << " z: " << cam0ref.position_.z << "\n";
     }
 
-    //renderer.removeRenderObject(ro0ref);
+    renderer.removeRenderObject(ro0ref);
     //renderer.removeRenderObject(ro1ref);
     //renderer.removeRenderObject(ro2ref);
 
