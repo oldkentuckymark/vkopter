@@ -92,7 +92,7 @@ private:
 
 
    //consts for CA
-   int const static INTERSECTION_CHANCE = 25;
+   int const static INTERSECTION_CHANCE = 20;
 
 
 
@@ -133,6 +133,8 @@ private:
    {
        return disGridZ_(gen_);
    }
+
+
 
 
    auto f00(EventWindow<S>& ew) -> void
