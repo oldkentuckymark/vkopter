@@ -32,11 +32,10 @@ template<class T>
 class vector2d
 {
 public:
-    explicit vector2d(std::size_t const width = 0, std::size_t const height = 0)
+    explicit vector2d(std::size_t const width = 0, std::size_t const height = 0) :
+        width_(width), height_(height)
     {
         std::size_t const size = width * height;
-        width_ = width;
-        height_ = height;
         data_.resize(size);
     }
 

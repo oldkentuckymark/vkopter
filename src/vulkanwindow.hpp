@@ -87,35 +87,35 @@ public:
 
     auto graphicsQueueFamilyIndex() -> uint32_t { return graphics_queue_index_; }
 
-    vk::Queue getTransferQueue() { return transfer_queue_; }
+    auto getTransferQueue() -> vk::Queue { return transfer_queue_; }
 
-    uint32_t transferQueueFamilyIndex() { return transfer_queue_index_; }
+    auto transferQueueFamilyIndex() -> uint32_t { return transfer_queue_index_; }
 
-    vk::Extent2D swapChainImageSize() { return swapchain_extent_; }
+    auto swapChainImageSize() -> vk::Extent2D { return swapchain_extent_; }
 
-    vk::RenderPass defaultRenderPass() { return default_renderpass_; }
+    auto defaultRenderPass() -> vk::RenderPass { return default_renderpass_; }
 
-    vk::Framebuffer currentFramebuffer() { return swapchain_framebuffers_[current_frame_]; }
+    auto currentFramebuffer() -> vk::Framebuffer { return swapchain_framebuffers_[current_frame_]; }
 
-    vk::CommandBuffer currentCommandBuffer() { return default_command_buffers_[current_frame_]; }
+    auto currentCommandBuffer() -> vk::CommandBuffer { return default_command_buffers_[current_frame_]; }
 
-    uint32_t getWidth() const
+    [[nodiscard]] auto getWidth() -> uint32_t const
     {
         int w;
         SDL_GL_GetDrawableSize(window_, &w, nullptr);
         return w;
     }
 
-    uint32_t getHeight() const
+    [[nodiscard]] auto getHeight() -> uint32_t const
     {
         int h;
         SDL_GL_GetDrawableSize(window_, nullptr, &h);
         return h;
     }
 
-    render::MemoryManager &getMemoryManager() { return *memoryManager; }
+    auto getMemoryManager() -> render::MemoryManager & { return *memoryManager; }
 
-    void beginFrame()
+    auto beginFrame() -> void
     {
         auto r = device_.waitForFences(in_flight_fence, VK_TRUE, UINT64_MAX);
         device_.resetFences(in_flight_fence);
@@ -133,7 +133,7 @@ public:
         default_command_buffers_[current_frame_].begin(cbbi);
     }
 
-    void endFrame()
+    auto endFrame() -> void
     {
         default_command_buffers_[current_frame_].end();
         vk::SubmitInfo submitInfo;
@@ -160,7 +160,7 @@ public:
         auto r = graphics_queue_.presentKHR(presentInfo);
     }
 
-    void recreate_swapchain()
+    auto recreate_swapchain() -> void
     {
         device_.waitIdle();
 
@@ -177,10 +177,10 @@ public:
         create_framebuffers();
     }
 
-    void present() {}
+    auto present() -> void {}
 
 private:
-    std::chrono::time_point<std::chrono::steady_clock> c1, c2;
+    std::chrono::time_point<std::chrono::steady_clock> c1_, c2_;
 
     SDL_Window *window_ = nullptr;
 
@@ -237,7 +237,7 @@ private:
     }
 #endif
 
-    void create_instance()
+    auto create_instance() -> void
     {
         vk::ApplicationInfo appInfo;
         appInfo.pApplicationName = "vkopter";
@@ -285,7 +285,7 @@ private:
 #endif
     }
 
-    void destroy_instance()
+    auto destroy_instance() -> void
     {
 #ifndef NDEBUG
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)
@@ -295,14 +295,14 @@ private:
         instance_.destroy();
     }
 
-    void pick_physical_device()
+    auto pick_physical_device() -> void
     {
         auto pdevs = instance_.enumeratePhysicalDevices();
         auto pp = pdevs[0].getProperties();
         physical_device_ = pdevs[0];
     }
 
-    void get_queue_families()
+    auto get_queue_families() -> void
     {
         auto dqfps = physical_device_.getQueueFamilyProperties();
 
@@ -318,7 +318,7 @@ private:
         }
     }
 
-    void create_logical_device()
+    auto create_logical_device() -> void
     {
         std::vector<char const *> extentions;
         extentions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -362,9 +362,9 @@ private:
         transfer_queue_ = device_.getQueue(transfer_queue_index_, 0);
     }
 
-    void destroy_logical_device() { device_.destroy(); }
+    auto destroy_logical_device() -> void { device_.destroy(); }
 
-    void create_surface()
+    auto create_surface() -> void
     {
         VkSurfaceKHR cs = surface_;
         bool const b = SDL_Vulkan_CreateSurface(window_, instance_, &cs);
@@ -372,9 +372,9 @@ private:
         surface_ = cs;
     }
 
-    void destroy_surface() { instance_.destroySurfaceKHR(surface_); }
+    auto destroy_surface() -> void { instance_.destroySurfaceKHR(surface_); }
 
-    void create_depth_resourses()
+    auto create_depth_resourses() -> void
     {
         depth_image_ = memoryManager->createImage(swapchain_extent_.width,
                                                   swapchain_extent_.height,
@@ -398,13 +398,13 @@ private:
         depth_image_view_ = device_.createImageView(createInfo);
     }
 
-    void destroy_depth_resourses()
+    auto destroy_depth_resourses() -> void
     {
         device_.destroyImageView(depth_image_view_);
         memoryManager->destroyImage(depth_image_);
     }
 
-    void create_swapchain()
+    auto create_swapchain() -> void
     {
         auto surfCap = physical_device_.getSurfaceCapabilitiesKHR(surface_);
         auto surfaceFormats = physical_device_.getSurfaceFormatsKHR(surface_);
@@ -448,9 +448,9 @@ private:
         swapchain_images_ = device_.getSwapchainImagesKHR(swapchain_);
     }
 
-    void destroy_swapchain() { device_.destroySwapchainKHR(swapchain_); }
+    auto destroy_swapchain() -> void { device_.destroySwapchainKHR(swapchain_); }
 
-    void create_imageviews()
+    auto create_imageviews() -> void
     {
         swapchain_image_views_.resize(swapchain_images_.size());
 
@@ -473,14 +473,14 @@ private:
         }
     }
 
-    void destroy_imageviews()
+    auto destroy_imageviews() -> void
     {
         for (auto &iv : swapchain_image_views_) {
             device_.destroyImageView(iv);
         }
     }
 
-    void create_graphics_command_pool_and_buffer()
+    auto create_graphics_command_pool_and_buffer() -> void
     {
         vk::CommandPoolCreateInfo cpci;
         cpci.setQueueFamilyIndex(graphics_queue_index_);
@@ -494,9 +494,9 @@ private:
         default_command_buffers_ = device_.allocateCommandBuffers(cbai);
     }
 
-    void destroy_graphics_command_pool() { device_.destroyCommandPool(default_command_pool_); }
+    auto destroy_graphics_command_pool() -> void { device_.destroyCommandPool(default_command_pool_); }
 
-    void create_default_renderpass()
+    auto create_default_renderpass() -> void
     {
         vk::SubpassDependency dependency;
         dependency.setSrcSubpass(VK_SUBPASS_EXTERNAL);
@@ -555,9 +555,9 @@ private:
         default_renderpass_ = device_.createRenderPass(rpci);
     }
 
-    void destroy_default_renderpass() { device_.destroyRenderPass(default_renderpass_); }
+    auto destroy_default_renderpass() -> void { device_.destroyRenderPass(default_renderpass_); }
 
-    void create_framebuffers()
+    auto create_framebuffers() -> void
     {
         swapchain_framebuffers_.resize(swapchain_image_views_.size());
         for (auto i = 0ul; i < swapchain_image_views_.size(); ++i) {
@@ -573,14 +573,14 @@ private:
         }
     }
 
-    void destroy_framebuffers()
+    auto destroy_framebuffers() -> void
     {
         for (auto &f : swapchain_framebuffers_) {
             device_.destroyFramebuffer(f);
         }
     }
 
-    void create_sync_objects()
+    auto create_sync_objects() -> void
     {
         image_available_semaphore = device_.createSemaphore({});
         render_finished_semaphore = device_.createSemaphore({});
@@ -589,7 +589,7 @@ private:
         in_flight_fence = device_.createFence(fci);
     }
 
-    void destroy_sync_objects()
+    auto destroy_sync_objects() -> void
     {
         device_.destroySemaphore(image_available_semaphore);
         device_.destroySemaphore(render_finished_semaphore);
