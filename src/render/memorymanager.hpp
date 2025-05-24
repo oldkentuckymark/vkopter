@@ -40,16 +40,32 @@ public:
 
     ~MemoryManager()
     {
+        try
+        {
         device_.waitIdle();
+        }
+        catch (...)
+        {
+            std::abort();
+        }
 
         for(auto& b : buffers_)
         {
             destroyBuffer(b.first);
         }
         device_.destroyCommandPool(transfer_pool_);
+
+
         vmaDestroyAllocator(allocator_);
 
+
+
     }
+
+    MemoryManager(MemoryManager& ) = delete;
+    MemoryManager(MemoryManager&& ) = delete;
+    auto operator = (MemoryManager&) -> MemoryManager& = delete;
+    auto operator = (MemoryManager&&) -> MemoryManager& = delete;
 
     auto createBuffer(vk::BufferUsageFlags const usage, std::size_t const sizeInBytes, void* data = nullptr) -> vk::Buffer
     {
@@ -172,7 +188,7 @@ public:
     }
 
 private:
-    VmaAllocator allocator_;
+    VmaAllocator allocator_ = nullptr;
     vk::Instance instance_;
     vk::Device device_;
     vk::PhysicalDevice physical_device_;

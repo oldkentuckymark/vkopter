@@ -9,7 +9,7 @@
 namespace vkopter::game
 {
 
-class Entity
+struct Entity
 {
 public:
 

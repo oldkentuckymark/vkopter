@@ -1,6 +1,5 @@
  #pragma once
 
-#include <cstdint>
 #include "entt/entt.hpp"
 
 namespace vkopter::game
@@ -12,7 +11,7 @@ public:
 
     Simulation()
     {
-        auto l = registry.create();
+        auto l = registry_.create();
     }
 
     ~Simulation()
@@ -28,8 +27,8 @@ public:
 
 
 private:
-    entt::registry registry;
-    std::vector<entt::entity> entities;
+    entt::registry registry_;
+    std::vector<entt::entity> entities_;
 
 
 

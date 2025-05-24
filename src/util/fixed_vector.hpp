@@ -17,17 +17,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <limits>
 
 template<class T, size_t MAX_SIZE, bool AUTO_CONSOLIDATE = true, class index_t = size_t>
-class fixed_vector
+class FixedVector
 {
 public:
-    fixed_vector() : pdata_(std::bit_cast<T*>(new char [MAX_SIZE * sizeof (T)]))
+    FixedVector() : pdata_(std::bit_cast<T*>(new char [MAX_SIZE * sizeof (T)]))
     {
 
         free_ranges_.emplace_front(0,MAX_SIZE - 1);
         \
     }
 
-    ~fixed_vector()
+    ~FixedVector()
     {
         std::deque<size_t> skiplist;
         for(auto const & fr : free_ranges_)
@@ -50,9 +50,9 @@ public:
         delete [] std::bit_cast<char*>(pdata_);
     }
 
-    fixed_vector(fixed_vector const & that) = delete;
+    FixedVector(FixedVector const & that) = delete;
 
-    auto operator = (fixed_vector const & that) -> fixed_vector& = delete;
+    auto operator = (FixedVector const & that) -> FixedVector& = delete;
 
     auto operator [] (index_t const i) -> T&
     {
@@ -113,7 +113,7 @@ public:
                 free_ranges_.insert(fri,{i,i});
                 if constexpr (AUTO_CONSOLIDATE)
                 {
-                    consolidate_ranges();
+                    consolidateRanges();
                 }
                 return;
             }
@@ -121,31 +121,31 @@ public:
         free_ranges_.emplace_back(i,i);
         if constexpr (AUTO_CONSOLIDATE)
         {
-            consolidate_ranges();
+            consolidateRanges();
         }
     }
 
-    [[nodiscard]] auto size() const -> index_t
+    [[nodiscard]] auto getSize() const -> index_t
     {
         return current_size_;
     }
 
-    [[nodiscard]] auto current_size_in_bytes() const -> index_t
+    [[nodiscard]] auto getCurrentSizeInBytes() const -> index_t
     {
         return current_size_ * sizeof(T);
     }
 
-    [[nodiscard]] static auto max_size_in_bytes() -> index_t
+    [[nodiscard]] static auto getMaxSizeInBytes() -> index_t
     {
         return MAX_SIZE * sizeof(T);
     }
 
-    [[nodiscard]] auto empty() const -> bool
+    [[nodiscard]] auto isEmpty() const -> bool
     {
         return current_size_ == 0;
     }
 
-    [[nodiscard]] auto full() const -> bool
+    [[nodiscard]] auto isFull() const -> bool
     {
         return current_size_ == MAX_SIZE;
     }
@@ -180,7 +180,7 @@ public:
         free_ranges_.emplace_front(0,MAX_SIZE-1);
     }
 
-    auto consolidate_ranges() -> void
+    auto consolidateRanges() -> void
     {
 
         bool pair_found = true;
@@ -195,7 +195,7 @@ public:
     struct Iterator
     {
 
-        explicit Iterator(fixed_vector<T, MAX_SIZE, AUTO_CONSOLIDATE,index_t> & o, index_t const i) :
+        explicit Iterator(FixedVector<T, MAX_SIZE, AUTO_CONSOLIDATE,index_t> & o, index_t const i) :
             obj(o),
             idx(i)
         {
@@ -214,7 +214,7 @@ public:
         friend auto operator!= (const Iterator& a, const Iterator& b) -> bool { return !(&a.obj == &b.obj && a.idx == b.idx); };
 
     private:
-        fixed_vector<T, MAX_SIZE, AUTO_CONSOLIDATE,index_t> & obj;
+        FixedVector<T, MAX_SIZE, AUTO_CONSOLIDATE,index_t> & obj;
         index_t idx;
     };
 

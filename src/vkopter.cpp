@@ -33,7 +33,7 @@ auto main(int argc, char **argv) -> int
     terrain.load("data/maps/test/hm.bmp");
     terrain.makeValid();
     renderer.resizeTerrain(terrain.getWidth(), terrain.getHeight());
-    renderer.updateTerrain(terrain.termap_.data(), terrain.altmap_.data());
+    renderer.updateTerrain(terrain.termapData(), terrain.altmapData());
     //terrain.clear();
 
     auto mesh0 = renderer.createMesh("data/meshes/untitled.gltf");

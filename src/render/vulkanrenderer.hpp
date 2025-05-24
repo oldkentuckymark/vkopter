@@ -99,19 +99,19 @@ public:
         terrain_alts_buffers_.resize(MAX_FRAMES_IN_FLIGHT);
         terrain_ters_buffers_.resize(MAX_FRAMES_IN_FLIGHT);
 
-        initBuffers();
-        initDescriptorPool();
+        init_buffers();
+        init_descriptor_pool();
 
-        descriptor_set_layout_ = createDescriptorSetLayout();
-        pipeline_layout_ = createPipelineLayout();
+        descriptor_set_layout_ = create_descriptor_set_layout();
+        pipeline_layout_ = create_pipeline_layout();
 
-        pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::MESH)] = createPipeline("data/shaders/phong/vert.spv","data/shaders/phong/frag.spv","","",PIPELINE_TYPE::MESH);
-        pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::TERRAIN)] = createPipeline("data/shaders/terrain/vert.spv","data/shaders/terrain/frag.spv","","",PIPELINE_TYPE::TERRAIN);
-        pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::WATER)] = createPipeline("data/shaders/water/vert.spv","data/shaders/water/frag.spv","data/shaders/water/tesc.spv","data/shaders/water/tese.spv",PIPELINE_TYPE::WATER);
+        pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::MESH)] = create_pipeline("data/shaders/phong/vert.spv","data/shaders/phong/frag.spv","","",PIPELINE_TYPE::MESH);
+        pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::TERRAIN)] = create_pipeline("data/shaders/terrain/vert.spv","data/shaders/terrain/frag.spv","","",PIPELINE_TYPE::TERRAIN);
+        pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::WATER)] = create_pipeline("data/shaders/water/vert.spv","data/shaders/water/frag.spv","data/shaders/water/tesc.spv","data/shaders/water/tese.spv",PIPELINE_TYPE::WATER);
 
         descriptor_sets_.resize(MAX_FRAMES_IN_FLIGHT);
-        descriptor_sets_ = allocateDescriptorSets();
-        updateDescriptorSets();
+        descriptor_sets_ = allocate_descriptor_sets();
+        update_descriptor_sets();
 
 
         //first 14 meshes MUST be terrain
@@ -197,24 +197,24 @@ public:
 
 
         memory_manager_.updateBuffer(materials_buffers_[currentFrame], 0,
-                                     materials_.current_size_in_bytes(),
+                                     materials_.getCurrentSizeInBytes(),
                                      materials_.data());
 
 
         memory_manager_.updateBuffer(model_matricies_buffers_[currentFrame], 0,
-                                     model_matricies_.current_size_in_bytes(),
+                                     model_matricies_.getCurrentSizeInBytes(),
                                      model_matricies_.data());
 
 
 
 
         memory_manager_.updateBuffer(cameras_buffers_[currentFrame], 0,
-                                     cameras_.current_size_in_bytes(),
+                                     cameras_.getCurrentSizeInBytes(),
                                      cameras_.data());
 
 
         memory_manager_.updateBuffer( lights_buffers_[currentFrame], 0,
-                                      lights_.current_size_in_bytes(),
+                                      lights_.getCurrentSizeInBytes(),
                                       lights_.data());
 
 
@@ -222,7 +222,7 @@ public:
         //loop through all render objects per frame, count mesh instances,upload vertbuffers, patch mesh infos
         //group render_objets for instacning, adject base index for shader lookup, upload ROs, use meshinfos for drawindirect commands
 
-        std::vector<RenderObject> renobjs; renobjs.reserve(render_objects_.size());
+        std::vector<RenderObject> renobjs; renobjs.reserve(render_objects_.getSize());
         for(auto& o : render_objects_)
         {
             renobjs.emplace_back(o);
@@ -251,34 +251,34 @@ public:
         //first 14 meshes must always be terrain
          for(uint32_t m = 0; m <= 13; ++m)
          {
-             positions.insert(positions.end(), meshes_[m].getPositions().begin(),meshes_[m].getPositions().end());
-             texcoords.insert(texcoords.end(), meshes_[m].getTexCoords().begin(),meshes_[m].getTexCoords().end());
-             normals.insert(normals.end(), meshes_[m].getNormals().begin(),meshes_[m].getNormals().end());
-             indicies.insert(indicies.end(), meshes_[m].getIndicies().begin(), meshes_[m].getIndicies().end());
+             positions.insert(positions.end(), meshes_[m].positions().begin(),meshes_[m].positions().end());
+             texcoords.insert(texcoords.end(), meshes_[m].texcoords().begin(),meshes_[m].texcoords().end());
+             normals.insert(normals.end(), meshes_[m].normals().begin(),meshes_[m].normals().end());
+             indicies.insert(indicies.end(), meshes_[m].indicies().begin(), meshes_[m].indicies().end());
          }
 
         //insert water mesh as 15th aka meshes_[14]
-        positions.insert(positions.end(),meshes_[14].getPositions().begin(), meshes_[14].getPositions().end());
-        texcoords.insert(texcoords.end(), meshes_[14].getTexCoords().begin(), meshes_[14].getTexCoords().end());
-        normals.insert(normals.end(), meshes_[14].getNormals().begin(), meshes_[14].getNormals().end());
-        indicies.insert(indicies.end(), meshes_[14].getIndicies().begin(), meshes_[14].getIndicies().end());
+        positions.insert(positions.end(),meshes_[14].positions().begin(), meshes_[14].positions().end());
+        texcoords.insert(texcoords.end(), meshes_[14].texcoords().begin(), meshes_[14].texcoords().end());
+        normals.insert(normals.end(), meshes_[14].normals().begin(), meshes_[14].normals().end());
+        indicies.insert(indicies.end(), meshes_[14].indicies().begin(), meshes_[14].indicies().end());
 
         for(auto & meshCount : meshCounts)
         {
             Mesh const & mesh = meshes_[meshCount.first];
             uint32_t const count = meshCount.second;
 
-            positions.insert(positions.end(), mesh.getPositions().begin(), mesh.getPositions().end());
-            texcoords.insert(texcoords.end(), mesh.getTexCoords().begin(), mesh.getTexCoords().end());
-            normals.insert(normals.end(), mesh.getNormals().begin(), mesh.getNormals().end());
-            indicies.insert(indicies.end(), mesh.getIndicies().begin(), mesh.getIndicies().end());
+            positions.insert(positions.end(), mesh.positions().begin(), mesh.positions().end());
+            texcoords.insert(texcoords.end(), mesh.texcoords().begin(), mesh.texcoords().end());
+            normals.insert(normals.end(), mesh.normals().begin(), mesh.normals().end());
+            indicies.insert(indicies.end(), mesh.indicies().begin(), mesh.indicies().end());
 
             vk::DrawIndexedIndirectCommand diic;
             diic.setInstanceCount(count);
             diic.setFirstInstance(firstInstance);
-            diic.setFirstIndex(indicies.size() - mesh.getIndicies().size());
-            diic.setIndexCount(mesh.getIndicies().size());
-            diic.setVertexOffset(positions.size() - mesh.getPositions().size());
+            diic.setFirstIndex(indicies.size() - mesh.indicies().size());
+            diic.setIndexCount(mesh.indicies().size());
+            diic.setVertexOffset(positions.size() - mesh.positions().size());
             diics.emplace_back(diic);
 
             firstInstance += count;
@@ -290,7 +290,7 @@ public:
         memory_manager_.updateBuffer(normals_buffers_[currentFrame], 0, normals.size()*sizeof(glm::vec4), normals.data());
 
 
-        memory_manager_.updateBuffer(render_objects_buffers_[currentFrame], 0, render_objects_.size()*sizeof(RenderObject), render_objects_.data());
+        memory_manager_.updateBuffer(render_objects_buffers_[currentFrame], 0, render_objects_.getSize()*sizeof(RenderObject), render_objects_.data());
         memory_manager_.updateBuffer(draw_commands_buffers_[currentFrame], 0, diics.size() * sizeof(vk::DrawIndexedIndirectCommand), diics.data());
 
         vk::RenderPassBeginInfo rpBeginInfo;
@@ -482,14 +482,14 @@ public:
 
 private:
 
-    auto initBuffers() -> void
+    auto init_buffers() -> void
     {
         for(auto i = 0ul; i < MAX_FRAMES_IN_FLIGHT; ++i)
         {
-            materials_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,materials_.max_size_in_bytes());
-            model_matricies_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,model_matricies_.max_size_in_bytes());
-            lights_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,lights_.max_size_in_bytes());
-            cameras_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,cameras_.max_size_in_bytes());
+            materials_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,materials_.getMaxSizeInBytes());
+            model_matricies_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,model_matricies_.getMaxSizeInBytes());
+            lights_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,lights_.getMaxSizeInBytes());
+            cameras_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,cameras_.getMaxSizeInBytes());
             render_objects_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer,sizeof(RenderObject) * MAX_OBJECTS_COUNT);
             positions_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eVertexBuffer,sizeof(glm::vec4) * MAX_VERTEX_COUNT);
             texcoords_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eVertexBuffer,sizeof(glm::vec4) * MAX_VERTEX_COUNT);
@@ -506,7 +506,7 @@ private:
 
     }
 
-    auto initDescriptorPool() -> void
+    auto init_descriptor_pool() -> void
     {
         vk::DescriptorPoolSize dps;
         dps.setType(vk::DescriptorType::eStorageBuffer);
@@ -519,7 +519,7 @@ private:
         descriptor_pool_ = device_.createDescriptorPool(dpci);
     }
 
-    auto createDescriptorSetLayout() -> vk::DescriptorSetLayout
+    auto create_descriptor_set_layout() -> vk::DescriptorSetLayout
     {
         std::array<vk::DescriptorSetLayoutBinding,32> dslb;
         for(auto i = 0ul; i < 32; ++i)
@@ -579,7 +579,7 @@ private:
         return dsl;
     }
 
-    auto allocateDescriptorSets() -> per_frame_in_flight_vector<vk::DescriptorSet>
+    auto allocate_descriptor_sets() -> per_frame_in_flight_vector<vk::DescriptorSet>
     {
         vk::DescriptorSetAllocateInfo dsai;
         dsai.setDescriptorPool(descriptor_pool_);
@@ -592,7 +592,7 @@ private:
         return device_.allocateDescriptorSets(dsai);
     }
 
-    auto createPipelineLayout() -> vk::PipelineLayout
+    auto create_pipeline_layout() -> vk::PipelineLayout
     {
         vk::PushConstantRange pcr;
         pcr.setSize(128);
@@ -606,21 +606,21 @@ private:
         return pipeline_layout_;
     }
 
-    auto createPipeline(std::string const & vertPath,
+    auto create_pipeline(std::string const & vertPath,
                         std::string const & fragPath,
                         std::string const & tcsPath,
                         std::string const & tesPath,
                         PIPELINE_TYPE renderType) -> vk::Pipeline
     {
-        vk::ShaderModule vertModule = loadShader(vertPath);
-        vk::ShaderModule fragModule = loadShader(fragPath);
+        vk::ShaderModule vertModule = load_shader(vertPath);
+        vk::ShaderModule fragModule = load_shader(fragPath);
         vk::ShaderModule tcsModule;
         vk::ShaderModule tesModule;
 
         if(renderType == PIPELINE_TYPE::WATER)
         {
-            tcsModule = loadShader(tcsPath);
-            tesModule = loadShader(tesPath);
+            tcsModule = load_shader(tcsPath);
+            tesModule = load_shader(tesPath);
         }
 
         vk::PipelineShaderStageCreateInfo tcsPSSCI;
@@ -779,7 +779,7 @@ private:
         return pipeline;
     }
 
-    auto updateDescriptorSets() -> void
+    auto update_descriptor_sets() -> void
     {
         std::vector<per_frame_in_flight_vector<vk::Buffer>> buffers(32);
         for(auto& b : buffers)
@@ -828,7 +828,7 @@ private:
         }
     }
 
-    auto loadShader(const std::string &path) -> vk::ShaderModule
+    auto load_shader(const std::string &path) -> vk::ShaderModule
     {
         auto buffer = read_file(path);
 
@@ -877,14 +877,14 @@ private:
     per_frame_in_flight_vector<vk::DescriptorSet> descriptor_sets_;
 
 
-    fixed_vector<Mesh,1024> meshes_;
+    FixedVector<Mesh,1024> meshes_;
     std::vector<uint32_t> mesh_handles_;
 
-    fixed_vector<RenderObject,MAX_OBJECTS_COUNT> render_objects_;
-    fixed_vector<Material, MAX_OBJECTS_COUNT> materials_;
-    fixed_vector<game::Camera, 4> cameras_;
-    fixed_vector<glm::mat4, MAX_OBJECTS_COUNT> model_matricies_;
-    fixed_vector<Light, MAX_OBJECTS_COUNT> lights_;
+    FixedVector<RenderObject,MAX_OBJECTS_COUNT> render_objects_;
+    FixedVector<Material, MAX_OBJECTS_COUNT> materials_;
+    FixedVector<game::Camera, 4> cameras_;
+    FixedVector<glm::mat4, MAX_OBJECTS_COUNT> model_matricies_;
+    FixedVector<Light, MAX_OBJECTS_COUNT> lights_;
 
 
     //gpu side data must be duplicated for each frame in flight

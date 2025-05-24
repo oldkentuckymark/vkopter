@@ -22,7 +22,7 @@ public:
        disGridY_(0,grid_.HEIGHT-1),
        disGridZ_(0,grid_.DEPTH-1),
        disBool_(0,1),
-       funcs_(getFuncs()),
+       funcs_(get_funcs()),
        gen_(87735410)
    {
    }
@@ -77,9 +77,12 @@ public:
    };
 
 
-   Grid<W,H,D>& grid_;
+
 
 private:
+
+    Grid<W,H,D>& grid_;
+
    std::minstd_rand gen_;
    std::uniform_int_distribution<int> disBool_;
    std::uniform_int_distribution<int> disPercent_;
@@ -91,11 +94,10 @@ private:
    std::array< void (AtomUpdater::*)(EventWindow<S>&), NUM_TYPES > funcs_;
 
 
+////////////////////////////////////////////////////////////
+
    //consts for CA
    int const static INTERSECTION_CHANCE = 20;
-
-
-
 
    auto coin() -> bool
    {
@@ -133,8 +135,6 @@ private:
    {
        return disGridZ_(gen_);
    }
-
-
 
 
    auto f00(EventWindow<S>& ew) -> void
@@ -362,8 +362,10 @@ private:
        ew(-1,0) << RoadEW;
    }
 
+//////////////////////////////////////////////////////////////////
 
-   static constexpr auto getFuncs() -> std::array<void (AtomUpdater<W,H,D,S>::*)(EventWindow<S> &), NUM_TYPES>
+
+   static constexpr auto get_funcs() -> std::array<void (AtomUpdater<W,H,D,S>::*)(EventWindow<S> &), NUM_TYPES>
    {
            return
            {

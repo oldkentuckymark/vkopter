@@ -34,21 +34,9 @@ enum Type : uint8_t
 class Atom
 {
 public:
-
-
     Type type = Empty;
 
-    int8_t data = 0;
-
-    Atom() = default;
-
-    Atom(Atom const & that) = default;
-
-    Atom(Type const & that) :
-        type(that)
-    {
-
-    }
+    uint8_t data = 0;
 
     auto static generateRange(uint8_t const first, uint8_t const last) -> std::vector<Type>
     {
@@ -66,7 +54,6 @@ public:
         type = that;
         return *this;
     }
-    auto operator = (Atom const & that) -> Atom& = default;
 
     auto operator = (std::ranges::range auto atoms) -> Atom&
     {
@@ -140,7 +127,6 @@ public:
 
     }
 
-
     auto operator == (const Atom& that) const -> bool
     {
         if(that.type == type)
@@ -173,7 +159,6 @@ public:
         return false;
     }
 
-
     auto operator != (const Atom& that) const -> bool
     {
         return that.type != type;
@@ -203,7 +188,6 @@ public:
         return type != Empty;
     }
 
-
     [[nodiscard]] auto isInRange(uint8_t const first, uint8_t const last) const -> bool
     {
         auto const t = static_cast<uint8_t>(this->type);
@@ -213,17 +197,6 @@ public:
         }
         return false;
     }
-
-    auto setData(int8_t const d) -> void
-    {
-        data = d;
-    }
-
-    [[nodiscard]] auto getData() const -> int8_t
-    {
-        return data;
-    }
-
 
 private:
 

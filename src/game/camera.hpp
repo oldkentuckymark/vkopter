@@ -1,5 +1,6 @@
 #pragma once
 
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -35,14 +36,14 @@ public:
         update();
     }
 
-    void move(glm::vec3 const & v )
+    auto move(glm::vec3 const & v ) -> void
     {
         velocity_ += v;
     }
 
     auto update() -> void
     {
-        glm::mat4 cameraRotation = getRotationMatrix();
+        glm::mat4 cameraRotation = get_rotation_matrix();
         position_ += glm::vec3(cameraRotation * glm::vec4(velocity_ * 0.5f, 0.f));
         proj_ = glm::perspectiveLH_ZO(fov_,
                                       width_/
@@ -50,23 +51,23 @@ public:
                                       near_,
                                       far_);
         proj_ = glm::scale(proj_, {0.01f,0.01f,0.01f});
-        view_ = getViewMatrix();
+        view_ = get_view_matrix();
         velocity_ = {0.0f,0.0f,0.0f};
     }
 
 private:
 
-    glm::mat4 getViewMatrix()
+    auto get_view_matrix() -> glm::mat4
     {
         // to create a correct model view, we need to move the world in opposite
         // direction to the camera
         //  so we will create the camera model matrix and invert
         glm::mat4 cameraTranslation = glm::translate(glm::mat4(1.f), position_);
-        glm::mat4 cameraRotation = getRotationMatrix();
+        glm::mat4 cameraRotation = get_rotation_matrix();
         return glm::inverse(cameraTranslation * cameraRotation);
     }
 
-    glm::mat4 getRotationMatrix()
+    auto get_rotation_matrix() -> glm::mat4
     {
         // fairly typical FPS style camera. we join the pitch and yaw rotations into
         // the final rotation matrix

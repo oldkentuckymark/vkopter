@@ -5,7 +5,7 @@
 #include <cstdint>
 
 template<class T, uint64_t WIDTH, uint64_t HEIGHT>
-class array2d
+class Array2d
 {
 public:
     auto operator() (std::size_t const x, std::size_t const y) -> T&
@@ -29,10 +29,10 @@ private:
 };
 
 template<class T>
-class vector2d
+class Vector2d
 {
 public:
-    explicit vector2d(std::size_t const width = 0, std::size_t const height = 0) :
+    explicit Vector2d(std::size_t const width = 0, std::size_t const height = 0) :
         width_(width), height_(height)
     {
         std::size_t const size = width * height;
@@ -75,17 +75,17 @@ public:
         return data_[y*width_+x];
     }
 
-    [[nodiscard]] auto size() const -> size_t
+    [[nodiscard]] auto getSize() const -> size_t
     {
         return width_ * height_;
     }
 
-    [[nodiscard]] auto width() const -> size_t
+    [[nodiscard]] auto getWidth() const -> size_t
     {
         return width_;
     }
 
-    [[nodiscard]] auto height() const -> size_t
+    [[nodiscard]] auto getHeight() const -> size_t
     {
         return height_;
     }

@@ -3,9 +3,7 @@
 #include <bit>
 #include <string>
 #include "util/array2d.hpp"
-#include <vector>
 #include <SDL2/SDL.h>
-#include <random>
 #include <glm/vec2.hpp>
 
 namespace vkopter::game
@@ -259,23 +257,32 @@ public:
     }
 
 
-    auto getWidth() const -> uint32_t
+    [[nodiscard]] auto getWidth() const -> uint32_t
     {
         return width_;
     }
 
-    auto getHeight() const -> uint32_t
+    [[nodiscard]] auto getHeight() const -> uint32_t
     {
         return height_;
     }
 
-    vector2d<uint32_t> termap_;
-    vector2d<uint32_t> altmap_;
+    [[nodiscard]] auto termapData() -> uint32_t*
+    {
+        return termap_.data();
+    }
 
+    [[nodiscard]] auto altmapData() -> uint32_t*
+    {
+        return altmap_.data();
+    }
 
 private:
     uint32_t width_ = 0;
     uint32_t height_ = 0;
+
+    Vector2d<uint32_t> termap_;
+    Vector2d<uint32_t> altmap_;
 
 
 };

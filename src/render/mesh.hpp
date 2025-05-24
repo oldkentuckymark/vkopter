@@ -15,11 +15,12 @@ class Mesh
 {
 public:
 
-    Mesh() = default;
+    Mesh() = delete;
     ~Mesh() = default;
     Mesh(Mesh const &) = default;
+    Mesh(Mesh &&) = delete;
     auto operator = (Mesh const &) -> Mesh& = default;
-    auto operator = (Mesh &&) -> Mesh& = default;
+    auto operator = (Mesh &&) -> Mesh& = delete;
 
     explicit Mesh(std::string const & path)
     {
@@ -33,22 +34,22 @@ public:
         }
     }
 
-    [[nodiscard]] auto getPositions() const -> std::vector<glm::vec4> const &
+    [[nodiscard]] auto positions() const -> std::vector<glm::vec4> const &
     {
         return positions_;
     }
 
-    [[nodiscard]] auto getTexCoords() const -> std::vector<glm::vec4> const &
+    [[nodiscard]] auto texcoords() const -> std::vector<glm::vec4> const &
     {
         return texcoords_;
     }
 
-    [[nodiscard]] auto getNormals() const -> std::vector<glm::vec4> const &
+    [[nodiscard]] auto normals() const -> std::vector<glm::vec4> const &
     {
         return normals_;
     }
 
-    [[nodiscard]] auto getIndicies() const -> std::vector<uint32_t> const &
+    [[nodiscard]] auto indicies() const -> std::vector<uint32_t> const &
     {
         return indicies_;
     }

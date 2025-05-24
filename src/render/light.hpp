@@ -8,11 +8,11 @@ namespace vkopter::render
 class Light
 {
 public:
-    void setAmbient(glm::vec4 v){ambient = v;}
-    void setDiffuse(glm::vec4 v){diffuse = v;}
-    void setSpecular(glm::vec4 v){specular = v;}
-    void setPosition(glm::vec4 v){position = v;}
-    void setDirection(glm::vec4 v){direction = v;}
+    void setAmbient(glm::vec4 const v){ambient = v;}
+    void setDiffuse(glm::vec4 const v){diffuse = v;}
+    void setSpecular(glm::vec4 const v){specular = v;}
+    void setPosition(glm::vec4 const v){position = v;}
+    void setDirection(glm::vec4 const v){direction = v;}
     void setConstantAttenuation(float const a){attenuation.x = a;}
     void setLinearAttenuation(float const a){attenuation.y = a;}
     void setQuadraticAttenuation(float const a){attenuation.z = a;}
