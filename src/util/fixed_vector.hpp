@@ -54,9 +54,6 @@ public:
 
     auto operator = (fixed_vector const & that) -> fixed_vector& = delete;
 
-
-
-
     auto operator [] (index_t const i) -> T&
     {
         return pdata_[i];

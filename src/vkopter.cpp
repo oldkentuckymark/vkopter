@@ -76,7 +76,7 @@ auto main(int argc, char **argv) -> int
             else if(e.type == SDL_WINDOWEVENT)
             {
                 if(e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    window.recreate_swapchain();
+                    window.recreateSwapchain();
                     renderer.releaseSwapChainResources();
                     renderer.initSwapChainResources();
                     //cam0ref.setPerspective(45.0f,window.getWidth(),window.getHeight());

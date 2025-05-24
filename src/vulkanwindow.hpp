@@ -13,7 +13,8 @@
 #include <array>
 #include <vector>
 
-namespace vkopter {
+namespace vkopter
+{
 
 class VulkanWindow
 {
@@ -160,7 +161,7 @@ public:
         auto r = graphics_queue_.presentKHR(presentInfo);
     }
 
-    auto recreate_swapchain() -> void
+    auto recreateSwapchain() -> void
     {
         device_.waitIdle();
 
