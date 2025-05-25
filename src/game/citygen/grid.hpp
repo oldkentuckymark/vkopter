@@ -2,7 +2,7 @@
 
 #include "atom.hpp"
 #include "eventwindow.hpp"
-#include <array>
+#include "../terrain.hpp"
 
 namespace vkopter::game::citygen
 {
@@ -12,9 +12,19 @@ class Grid
 {
 public:
 
+    enum SiteLayer : uint8_t
+    {
+        TerrainType = 0,
+        Altitude,
+        Crime,
+        Economy,
+        Pollution
+
+    };
+
     auto operator()(const int32_t x, const int32_t y, const int32_t z = 0) -> Atom&
     {
-        return atoms[x][y][z];
+        return atoms_[x][y][z];
         //return atoms[z].at(x,y);
     }
 
@@ -30,7 +40,7 @@ public:
             {
                 for(int32_t ewz = -EventWindow<S>::SIZE; ewz <= EventWindow<S>::SIZE; ++ewz)
                 {
-                    if(inBounds(ewx+x, ewy+y,ewz+z))
+                    if(isInBounds(ewx+x, ewy+y,ewz+z))
                     {
                         win(ewx,ewy,ewz) = (*this)(ewx+x, ewy+y,ewz+z);
                         win.siteMemory(0,ewx,ewy,ewz) = siteMemory(0,ewx+x, ewy+y,ewz+z);
@@ -70,7 +80,7 @@ public:
             {
                 for(int32_t ewz = -EventWindow<S>::SIZE; ewz < EventWindow<S>::SIZE; ++ewz)
                 {
-                    if(inBounds(x + ewx,y + ewy,z + ewz))
+                    if(isInBounds(x + ewx,y + ewy,z + ewz))
                     {
                         (*this)( x + ewx, y + ewy, z + ewz) =  ew(ewx,ewy,ewz);
                         siteMemory(0, x + ewx, y + ewy, z + ewz) =  ew.siteMemory(0,ewx,ewy,ewz);
@@ -87,33 +97,33 @@ public:
         }
     }
 
-    auto inBounds(const int32_t x, const int32_t y, const int32_t z = 0) const -> bool
+    auto isInBounds(const int32_t x, const int32_t y, const int32_t z = 0) const -> bool
     {
-        return x <= WIDTH - 1 &&
+        return x <= width_ - 1 &&
                 x >= 0 &&
-                y <= HEIGHT - 1 &&
+                y <= height_ - 1 &&
                 y >= 0 &&
-                z <= DEPTH - 1 &&
+                z <= depth_ - 1 &&
                 z >= 0;
     }
 
     auto clear(const Type& t = Empty) -> void
     {
-        for(auto x = 0; x < WIDTH; ++x)
+        for(auto x = 0; x < width_; ++x)
         {
-            for(auto y = 0; y < HEIGHT; ++y)
+            for(auto y = 0; y < height_; ++y)
             {
-                for(auto z = 0; z < DEPTH; ++z)
+                for(auto z = 0; z < depth_; ++z)
                 {
-                    atoms[x][y][z] = t;
-                    site_memory[0][x][y][z] = 0;
-                    site_memory[1][x][y][z] = 0;
-                    site_memory[2][x][y][z] = 0;
-                    site_memory[3][x][y][z] = 0;
-                    site_memory[4][x][y][z] = 0;
-                    site_memory[5][x][y][z] = 0;
-                    site_memory[6][x][y][z] = 0;
-                    site_memory[7][x][y][z] = 0;
+                    atoms_[x][y][z] = t;
+                    site_memory_[0][x][y][z] = 0;
+                    site_memory_[1][x][y][z] = 0;
+                    site_memory_[2][x][y][z] = 0;
+                    site_memory_[3][x][y][z] = 0;
+                    site_memory_[4][x][y][z] = 0;
+                    site_memory_[5][x][y][z] = 0;
+                    site_memory_[6][x][y][z] = 0;
+                    site_memory_[7][x][y][z] = 0;
                 }
             }
         }
@@ -122,17 +132,43 @@ public:
 
     auto siteMemory(size_t const N, int32_t const x, int32_t const y, int32_t const z = 0) -> int8_t&
     {
-        return site_memory[N][x][y][z];
+        return site_memory_[N][x][y][z];
+    }
+
+    auto loadTerrain(Terrain & terrain) -> void
+    {
+        for(auto x = 0ul; x < width_; ++x)
+        {
+            for(auto y = 0ul; y < height_; ++y)
+            {
+                site_memory_[SiteLayer::TerrainType][x][y][0] = terrain.termap().at(x,y);
+                site_memory_[SiteLayer::Altitude][x][y][0] = terrain.altmap().at(x,y);
+            }
+        }
+
+    }
+
+    auto getWidth() -> int32_t
+    {
+        return width_;
+    }
+    auto getHeight() -> int32_t
+    {
+        return height_;
+    }
+    auto getDepth() -> int32_t
+    {
+        return depth_;
     }
 
 
-    int32_t const static WIDTH = W;
-    int32_t const static HEIGHT = H;
-    int32_t const static DEPTH = D;
-
 private:
-    Atom atoms[WIDTH][HEIGHT][DEPTH];
-    int8_t site_memory[8][WIDTH][HEIGHT][DEPTH];
+    int32_t const static width_ = W;
+    int32_t const static height_ = H;
+    int32_t const static depth_ = D;
+
+    Atom atoms_[width_][height_][depth_];
+    int8_t site_memory_[8][width_][height_][depth_];
 
 };
 

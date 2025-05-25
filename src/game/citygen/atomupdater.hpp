@@ -16,21 +16,21 @@ class AtomUpdater
 public:
    explicit AtomUpdater(Grid<W,H,D>& g) :
        grid_(g),
-       disPercent_(0,100),
-       disEW_(-EventWindow<S>::SIZE,EventWindow<S>::SIZE),
-       disGridX_(0,grid_.WIDTH-1),
-       disGridY_(0,grid_.HEIGHT-1),
-       disGridZ_(0,grid_.DEPTH-1),
-       disBool_(0,1),
+       dis_percent_(0,100),
+       dis_ew_(-EventWindow<S>::SIZE,EventWindow<S>::SIZE),
+       dis_grid_x_(0,grid_.getWidth()-1),
+       dis_grid_y_(0,grid_.getHeight()-1),
+       dis_grid_z_(0,grid_.getDepth()-1),
+       dis_bool_(0,1),
        funcs_(get_funcs()),
        gen_(87735410)
    {
    }
 
-   AtomUpdater(AtomUpdater const &) = default;
-   auto operator=(AtomUpdater const &) -> AtomUpdater& = default;
-   AtomUpdater(AtomUpdater&&)  noexcept = default;
-   auto operator=(AtomUpdater&&)  noexcept -> AtomUpdater& = default;
+   AtomUpdater(AtomUpdater&) = default;
+   auto operator=(AtomUpdater&) -> AtomUpdater& = default;
+   AtomUpdater(AtomUpdater&&) = default;
+   auto operator=(AtomUpdater&&) -> AtomUpdater& = default;
    ~AtomUpdater() = default;
 
    //explicit AtomUpdater(AtomUpdater const & that) = default;
@@ -84,12 +84,12 @@ private:
     Grid<W,H,D>& grid_;
 
    std::minstd_rand gen_;
-   std::uniform_int_distribution<int> disBool_;
-   std::uniform_int_distribution<int> disPercent_;
-   std::uniform_int_distribution<int> disEW_;
-   std::uniform_int_distribution<int> disGridX_;
-   std::uniform_int_distribution<int> disGridY_;
-   std::uniform_int_distribution<int> disGridZ_;
+   std::uniform_int_distribution<int> dis_bool_;
+   std::uniform_int_distribution<int> dis_percent_;
+   std::uniform_int_distribution<int> dis_ew_;
+   std::uniform_int_distribution<int> dis_grid_x_;
+   std::uniform_int_distribution<int> dis_grid_y_;
+   std::uniform_int_distribution<int> dis_grid_z_;
 
    std::array< void (AtomUpdater::*)(EventWindow<S>&), NUM_TYPES > funcs_;
 
@@ -97,16 +97,16 @@ private:
 ////////////////////////////////////////////////////////////
 
    //consts for CA
-   int const static INTERSECTION_CHANCE = 20;
+   int const static INTERSECTION_CHANCE = 7;
 
    auto coin() -> bool
    {
-       return disBool_(gen_);
+       return dis_bool_(gen_);
    }
 
    auto rndPercent(const int p) -> bool
    {
-       const int n = disPercent_(gen_);
+       const int n = dis_percent_(gen_);
        return n <= p;
    }
 
@@ -118,22 +118,22 @@ private:
 
    auto rndEW() -> int32_t
    {
-       return disEW_(gen_);
+       return dis_ew_(gen_);
    }
 
    auto rndGridX() -> int32_t
    {
-       return disGridX_(gen_);
+       return dis_grid_x_(gen_);
    }
 
    auto rndGridY() -> int32_t
    {
-       return disGridY_(gen_);
+       return dis_grid_y_(gen_);
    }
 
    auto rndGridZ() -> int32_t
    {
-       return disGridZ_(gen_);
+       return dis_grid_z_(gen_);
    }
 
 

@@ -1,8 +1,6 @@
 #pragma once
 
 #include "atom.hpp"
-#include <array>
-#include <bit>
 
 namespace vkopter::game::citygen
 {
@@ -14,20 +12,20 @@ public:
     static const int32_t SIZE = S;
 
     EventWindow() :
-        site_memory{}
+        site_memory_{}
     {
 
     }
 
     auto operator () (const int32_t x, const int32_t y, const int32_t z = 0) -> Atom&
     {
-        return atoms[x + SIZE][y + SIZE][z + SIZE];
+        return atoms_[x + SIZE][y + SIZE][z + SIZE];
         //return atoms[z+SIZE].at(x+SIZE,y+SIZE);
     }
 
     auto siteMemory(size_t N, int32_t const x, int32_t const y, int32_t const z = 0) -> int8_t&
     {
-        return site_memory[N][x+SIZE][y+SIZE][z+SIZE];
+        return site_memory_[N][x+SIZE][y+SIZE][z+SIZE];
     }
 
     [[nodiscard]] auto contains(const std::vector<Type>& l) const -> bool
@@ -40,7 +38,7 @@ public:
                 {
                     for(auto const& t : l)
                     {
-                        if(t == atoms[x][y][z].type)
+                        if(t == atoms_[x][y][z].type)
                         {
                             return true;
                         }
@@ -54,9 +52,8 @@ public:
 
 
 private:
-    Atom atoms[(SIZE*2)+1][(SIZE*2)+1][(SIZE*2)+1];
-    int8_t site_memory[8][(SIZE*2)+1][(SIZE*2)+1][(SIZE*2)+1];
-    //std::array< vector2d<(SIZE*2)+1,(SIZE*2)+1,Atom>,(SIZE*2)+1> atoms;
+    Atom atoms_[(SIZE*2)+1][(SIZE*2)+1][(SIZE*2)+1];
+    int8_t site_memory_[8][(SIZE*2)+1][(SIZE*2)+1][(SIZE*2)+1];
 };
 
 }

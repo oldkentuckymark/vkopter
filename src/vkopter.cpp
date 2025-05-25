@@ -65,7 +65,8 @@ auto main(int argc, char **argv) -> int
 
     SDL_SetRelativeMouseMode(SDL_TRUE);
     bool running = true;
-    while (running) {
+    while (running)
+    {
         SDL_Event e;
         while (SDL_PollEvent(&e))
         {
@@ -75,7 +76,8 @@ auto main(int argc, char **argv) -> int
             }
             else if(e.type == SDL_WINDOWEVENT)
             {
-                if(e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                if(e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                {
                     window.recreateSwapchain();
                     renderer.releaseSwapChainResources();
                     renderer.initSwapChainResources();
@@ -89,7 +91,7 @@ auto main(int argc, char **argv) -> int
             }
         }
 
-        uint8_t const *const keys = SDL_GetKeyboardState(nullptr);
+        uint8_t const * const keys = SDL_GetKeyboardState(nullptr);
         if (keys[SDL_SCANCODE_ESCAPE])
         {
             running = false;

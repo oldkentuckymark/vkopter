@@ -277,6 +277,17 @@ public:
         return altmap_.data();
     }
 
+
+    auto termap() -> Vector2d<uint32_t>&
+    {
+        return termap_;
+    }
+
+    auto altmap() -> Vector2d<uint32_t>&
+    {
+        return altmap_;
+    }
+
 private:
     uint32_t width_ = 0;
     uint32_t height_ = 0;
@@ -286,6 +297,8 @@ private:
 
 
 };
+
+
 
 
 }
