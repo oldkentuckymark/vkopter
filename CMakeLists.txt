@@ -18,6 +18,8 @@ file(GLOB_RECURSE JOLT_HEADERS CONFIGURE_DEPENDS "src/Jolt/*.h")
 
 file(GLOB_RECURSE JOLT_SOURCES CONFIGURE_DEPENDS "src/Jolt/*.cpp")
 
+file(GLOB_RECURSE GLM_HEADERS CONFIGURE_DEPENDS "src/glm/*")
+
 set(LICENCES
 	src/game/entt/LICENSE
 	src/Jolt/LICENSE
@@ -41,7 +43,7 @@ set (CITYTEST_IMAGES
 	data/citygen/img/11.bmp
 	data/citygen/img/12.bmp
 
-        data/textures/texture.png
+	data/textures/texture.png
 
 )
 
@@ -56,7 +58,7 @@ set (HEIGHTMAP_IMAGES
 )
 
 set (MESH_FILES
-        data/meshes/untitled.gltf
+	data/meshes/untitled.gltf
 
 	data/meshes/terrain-00.gltf
 	data/meshes/terrain-01.gltf
@@ -73,20 +75,20 @@ set (MESH_FILES
 	data/meshes/terrain-12.gltf
 	data/meshes/terrain-13.gltf
 
-        data/meshes/road-00.gltf
-        data/meshes/road-01.gltf
-        data/meshes/road-02.gltf
-        data/meshes/road-03.gltf
-        data/meshes/road-04.gltf
-        data/meshes/road-05.gltf
-        data/meshes/road-06.gltf
-        data/meshes/road-07.gltf
-        data/meshes/road-08.gltf
-        data/meshes/road-09.gltf
-        data/meshes/road-10.gltf
-        data/meshes/road-11.gltf
-        data/meshes/road-12.gltf
-        data/meshes/road-13.gltf
+	data/meshes/road-00.gltf
+	data/meshes/road-01.gltf
+	data/meshes/road-02.gltf
+	data/meshes/road-03.gltf
+	data/meshes/road-04.gltf
+	data/meshes/road-05.gltf
+	data/meshes/road-06.gltf
+	data/meshes/road-07.gltf
+	data/meshes/road-08.gltf
+	data/meshes/road-09.gltf
+	data/meshes/road-10.gltf
+	data/meshes/road-11.gltf
+	data/meshes/road-12.gltf
+	data/meshes/road-13.gltf
 
 )
 
@@ -154,8 +156,9 @@ add_executable(vkopter
 	${JOLT_SOURCES}
 	${VKOPTER_HEADERS}
 	${VKOPTER_SOURCES}
-
+	${GLM_HEADERS}
 	)
+
 add_executable(citytest
 	${CITYTEST_SOURCES}
 	${CITYTEST_HEADERS}
@@ -165,24 +168,24 @@ if(WIN32)
 	find_library(SDL2MAIN_LIBRARY NAMES SDL2main PATHS "$ENV{VULKAN_SDK}/Lib")
 	find_library(SDL2_LIBRARY NAMES SDL2 PATHS "$ENV{VULKAN_SDK}/Lib" )
 	find_library(VULKAN_LIBRARY NAMES vulkan-1 PATHS "$ENV{VULKAN_SDK}/Lib")
-		find_library(ATOMIC_LIBRARY atomic)
-		#set_source_files_properties(src/vkopter.cpp PROPERTIES COMPILE_FLAGS /bigobj)
+	find_library(ATOMIC_LIBRARY atomic)
+	#set_source_files_properties(src/vkopter.cpp PROPERTIES COMPILE_FLAGS /bigobj)
 
 	target_include_directories(vkopter PUBLIC $ENV{VULKAN_SDK}/Include)
 	target_include_directories(citytest PUBLIC $ENV{VULKAN_SDK}/Include)
 
-		if(MSVC)
-			target_compile_options(vkopter PUBLIC /bigobj)
-			target_compile_options(citytest PUBLIC /bigobj)
-		endif()
+	if(MSVC)
+		target_compile_options(vkopter PUBLIC /bigobj)
+		target_compile_options(citytest PUBLIC /bigobj)
+	endif()
 
-		if(MINGW)
-		   #add_compile_options("-Wa,-mbig-obj")
-		   #target_compile_options(citytest PRIVATE "-Wa,-mbig-obj")
-		   #target_compile_options(citytest PUBLIC "-Og")
-		   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj O2")
-		   #set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mbig-obj")
-		endif()
+	if(MINGW)
+		#add_compile_options("-Wa,-mbig-obj")
+		#target_compile_options(citytest PRIVATE "-Wa,-mbig-obj")
+		#target_compile_options(citytest PUBLIC "-Og")
+		#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj O2")
+		#set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mbig-obj")
+	endif()
 endif()
 
 

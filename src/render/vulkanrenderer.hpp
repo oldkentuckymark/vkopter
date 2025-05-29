@@ -880,6 +880,8 @@ private:
     FixedVector<Mesh,1024> meshes_;
     std::vector<uint32_t> mesh_handles_;
 
+    vk::Image texture_atlas_;
+
     FixedVector<RenderObject,MAX_OBJECTS_COUNT> render_objects_;
     FixedVector<Material, MAX_OBJECTS_COUNT> materials_;
     FixedVector<game::Camera, 4> cameras_;

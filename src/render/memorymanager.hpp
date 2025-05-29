@@ -141,7 +141,7 @@ public:
         buffers_.erase(buffer);
     }
 
-    auto createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageUsageFlags usage) -> vk::Image
+    auto createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageUsageFlags usage, void* data = nullptr) -> vk::Image
     {
         VkImage img = VK_NULL_HANDLE;
         VkImageCreateInfo ici = {};
@@ -168,16 +168,74 @@ public:
         ici.samples = VK_SAMPLE_COUNT_1_BIT;
         ici.flags = 0;
 
+
+
         auto r = vmaCreateImage(allocator_, &ici, &imageAllocationCreateInfo, &img, &imageAllocation, &imageAllocationInfo);
         images_.insert({img,{imageAllocation,imageAllocationInfo}});
 
 
+
+        if(data)
+        {
+            int offset = 0;
+            int sizeInBytes = width * height * 4;
+
+            VkBuffer stagingbuffer = {};
+            VmaAllocation stagingbufferAllocation = {};
+            VmaAllocationInfo stagingbufferAllocationInfo = {};
+            VmaAllocationCreateInfo stagingbufferAllocationCreateInfo = {};
+            stagingbufferAllocationCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+            stagingbufferAllocationCreateInfo.flags = VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+            VkBufferCreateInfo stagingbufferCreateInfo = {};
+            stagingbufferCreateInfo.pNext = nullptr;
+            stagingbufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+            stagingbufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+            stagingbufferCreateInfo.size = sizeInBytes;
+            vmaCreateBuffer(allocator_, &stagingbufferCreateInfo, &stagingbufferAllocationCreateInfo, &stagingbuffer, &stagingbufferAllocation,&stagingbufferAllocationInfo);
+
+            void* memory = nullptr;
+
+            vmaInvalidateAllocation(allocator_, stagingbufferAllocation, offset, sizeInBytes);
+            vmaMapMemory(allocator_, stagingbufferAllocation, &memory);
+            std::memcpy(static_cast<char*>(memory)+offset, data, sizeInBytes);
+            vmaUnmapMemory(allocator_, stagingbufferAllocation);
+            vmaFlushAllocation(allocator_, stagingbufferAllocation, offset, sizeInBytes);
+
+
+            vk::CommandBufferBeginInfo cbbi;
+            cbbi.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+            transfer_command_buffer_.begin(cbbi);
+
+            vk::ImageSubresourceLayers isrl;
+            isrl.setAspectMask(vk::ImageAspectFlagBits::eColor);
+            isrl.setBaseArrayLayer(0);
+            isrl.setLayerCount(1);
+            isrl.setMipLevel(0);
+
+            vk::BufferImageCopy bic = {};
+            bic.setBufferImageHeight(height);
+            bic.setBufferRowLength(0);
+            bic.setBufferOffset(0);
+            bic.setImageExtent(vk::Extent3D{width,height,1});
+            bic.setImageSubresource(isrl);
+            bic.setImageOffset(vk::Offset3D{0,0,0});
+
+            transfer_command_buffer_.copyBufferToImage(stagingbuffer, img, vk::ImageLayout::eTransferDstOptimal, bic);
+            transfer_command_buffer_.end();
+
+            vk::SubmitInfo si;
+            si.setCommandBuffers(transfer_command_buffer_);
+            transfer_queue_.submit(si);
+            transfer_queue_.waitIdle();
+
+
+            vmaDestroyBuffer(allocator_,stagingbuffer, stagingbufferAllocation);
+
+        }
+
+
+
         return img;
-    }
-
-    auto updateImage(vk::Image image) -> void
-    {
-
     }
 
     auto destroyImage(vk::Image image) -> void
