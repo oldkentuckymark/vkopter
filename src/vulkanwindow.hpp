@@ -307,14 +307,19 @@ private:
     {
         auto dqfps = physical_device_.getQueueFamilyProperties();
 
-        for (auto i = 0ul; i < dqfps.size(); ++i) {
-            if (dqfps[i].queueFlags & vk::QueueFlagBits::eGraphics) {
+        for (auto i = 0ul; i < dqfps.size(); ++i)
+        {
+            if (dqfps[i].queueFlags & vk::QueueFlagBits::eGraphics)
+            {
                 graphics_queue_index_ = i;
-            } else if (dqfps[i].queueFlags & vk::QueueFlagBits::eTransfer) {
+            }
+            else if (dqfps[i].queueFlags & vk::QueueFlagBits::eTransfer)
+            {
                 transfer_queue_index_ = i;
             }
         }
-        if (transfer_queue_index_ == UINT32_MAX) {
+        if (transfer_queue_index_ == UINT32_MAX)
+        {
             transfer_queue_index_ = graphics_queue_index_;
         }
     }
