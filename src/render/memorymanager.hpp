@@ -202,26 +202,10 @@ public:
             vmaFlushAllocation(allocator_, stagingbufferAllocation, offset, sizeInBytes);
 
 
-            vk::CommandBufferBeginInfo cbbi;
-            cbbi.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
-            transfer_command_buffer_.begin(cbbi);
 
-            vk::ImageSubresourceLayers isrl;
-            isrl.setAspectMask(vk::ImageAspectFlagBits::eColor);
-            isrl.setBaseArrayLayer(0);
-            isrl.setLayerCount(1);
-            isrl.setMipLevel(0);
 
-            vk::BufferImageCopy bic = {};
-            bic.setBufferImageHeight(height);
-            bic.setBufferRowLength(0);
-            bic.setBufferOffset(0);
-            bic.setImageExtent(vk::Extent3D{width,height,1});
-            bic.setImageSubresource(isrl);
-            bic.setImageOffset(vk::Offset3D{0,0,0});
 
-            transfer_command_buffer_.copyBufferToImage(stagingbuffer, img, vk::ImageLayout::eTransferDstOptimal, bic);
-            transfer_command_buffer_.end();
+
 
             vk::SubmitInfo si;
             si.setCommandBuffers(transfer_command_buffer_);

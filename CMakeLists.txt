@@ -4,15 +4,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 project(vkopter LANGUAGES CXX)
 
-#file(GLOB_RECURSE VKOPTER_HEADERS CONFIGURE_DEPENDS "*.h*")
-
-#file(GLOB_RECURSE VKOPTER_INL CONFIGURE_DEPENDS "*.inl")
-
-#file(GLOB_RECURSE VKOPTER_SOURCES CONFIGURE_DEPENDS "*.cpp")
-
 file(GLOB_RECURSE VKOPTER_DATA_FILES CONFIGURE_DEPENDS "data/*")
-
-#file(GLOB_RECURSE CITYGEN_SCRIPTS CONFIGURE_DEPENDS "data/citygen/scripts/*")
 
 file(GLOB_RECURSE JOLT_HEADERS CONFIGURE_DEPENDS "src/Jolt/*.h")
 
@@ -43,8 +35,12 @@ set (CITYTEST_IMAGES
 	data/citygen/img/11.bmp
 	data/citygen/img/12.bmp
 
-	data/textures/texture.png
 
+
+)
+
+set (TEXTURE_FILES
+	data/textures/texture.png
 )
 
 set (CONFIG_FILES
@@ -194,9 +190,9 @@ endif()
 if(UNIX)
 	find_library(SDL2MAIN_LIBRARY SDL2main)
 	find_library(SDL2_LIBRARY SDL2)
-		find_library(VULKAN_LIBRARY vulkan)
-		find_library(ATOMIC_LIBRARY NAMES libatomic.so.1)
-		find_library(PTHREADS_LIBRARY NAMES pthread)
+	find_library(VULKAN_LIBRARY vulkan)
+	find_library(ATOMIC_LIBRARY NAMES libatomic.so.1)
+	find_library(PTHREADS_LIBRARY NAMES pthread)
 endif()
 
 
@@ -218,12 +214,3 @@ target_include_directories(citytest PUBLIC src)
 
 
 add_custom_target(data SOURCES ${VKOPTER_DATA_FILES})
-
-#add_custom_target(scripts SOURCES ${CITYGEN_SCRIPTS})
-
-
-
-
-
-
-

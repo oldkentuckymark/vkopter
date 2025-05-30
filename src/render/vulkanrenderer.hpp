@@ -2,15 +2,13 @@
 
 #include <vulkan/vulkan.hpp>
 
-
 #include <array>
-#include <memory>
 #include <string>
-#include <unordered_map>
 #include <algorithm>
 
 #include "util/fixed_vector.hpp"
 #include "util/read_file.hpp"
+#include "util/stb_image.h"
 
 #include "vulkanwindow.hpp"
 
@@ -20,7 +18,7 @@
 #include "light.hpp"
 #include "renderobject.hpp"
 #include "game/camera.hpp"
-#include "util/tiny_gltf.hpp"
+
 
 
 #include <glm/glm.hpp>
@@ -132,6 +130,15 @@ public:
 
         //15th mesh aka meshes_[14] must be the water
         createMesh("data/meshes/plane256.gltf");
+
+
+        //create texture atlas and image view
+        int cif = 0;
+        auto* data = stbi_load("data/textures/texture.png",&texture_atlas_width_,&texture_atlas_height_,&cif,4);
+
+        memory_manager_.createImage(texture_atlas_width_,texture_atlas_height_, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst);
+
+        stbi_image_free(data);
 
 
     }
@@ -844,7 +851,7 @@ private:
 
     constexpr size_t static MAX_OBJECTS_COUNT = 32768;
     constexpr size_t static MAX_VERTEX_COUNT = 1048576;
-    uint32_t const MAX_FRAMES_IN_FLIGHT;
+    uint32_t const MAX_FRAMES_IN_FLIGHT = 0;
 
 
     vk::Instance instance_;
@@ -881,6 +888,7 @@ private:
     std::vector<uint32_t> mesh_handles_;
 
     vk::Image texture_atlas_;
+    vk::ImageView texture_atlas_view_;
 
     FixedVector<RenderObject,MAX_OBJECTS_COUNT> render_objects_;
     FixedVector<Material, MAX_OBJECTS_COUNT> materials_;
@@ -947,8 +955,12 @@ private:
     PushConstantStruct push_constant_struct_{};
 
 
+    int texture_atlas_width_ = 0;
+    int texture_atlas_height_ = 0;
+
     uint32_t terrain_width_ = 0;
     uint32_t terrain_height_ = 0;
+
     uint32_t const MAX_TERRAIN_WIDTH_ = 512;
     uint32_t const MAX_TERRAIN_HEIGHT_ = 512;
     uint32_t const TERRAIN_MESH_INDEX_COUNT = 36;

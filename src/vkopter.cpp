@@ -1,6 +1,15 @@
 #define VMA_IMPLEMENTATION
 #define GLM_ENABLE_EXPERIMENTAL
 
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "util/tiny_gltf.hpp"
+#undef TINYGLTF_IMPLEMENTATION
+#undef STB_IMAGE_IMPLEMENTATION
+#undef STB_IMAGE_WRITE_IMPLEMENTATION
+
+
 #include <cstdint>
 
 #include "render/vk_mem_alloc.h"
@@ -17,12 +26,8 @@
 
 #include "game/terrain.hpp"
 
-#include "Jolt/Jolt.h"
+#include "util/stb_image.h"
 
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "util/tiny_gltf.hpp"
 
 auto main(int argc, char **argv) -> int
 {
