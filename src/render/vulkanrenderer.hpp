@@ -136,9 +136,10 @@ public:
         int cif = 0;
         auto* data = stbi_load("data/textures/texture.png",&texture_atlas_width_,&texture_atlas_height_,&cif,4);
 
-        memory_manager_.createImage(texture_atlas_width_,texture_atlas_height_, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst);
+        texture_atlas_ = memory_manager_.createImage(texture_atlas_width_,texture_atlas_height_, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst);
 
         stbi_image_free(data);
+
 
 
     }
@@ -187,6 +188,10 @@ public:
         {
             removeMesh(m);
         }
+
+        memory_manager_.destroyImage(texture_atlas_);
+
+
 
     }
 

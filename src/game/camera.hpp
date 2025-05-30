@@ -31,8 +31,8 @@ public:
         fov_ = fov;
         width_ = width;
         height_ = height;
-        near_ = near;
-        far_ = far;
+        near_ = 33.0f;
+        //far_ = far;
         update();
     }
 
