@@ -107,29 +107,6 @@ public:
         pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::TERRAIN)] = create_pipeline("data/shaders/terrain/vert.spv","data/shaders/terrain/frag.spv","","",PIPELINE_TYPE::TERRAIN);
         pipelines_[static_cast<uint32_t>(PIPELINE_TYPE::WATER)] = create_pipeline("data/shaders/water/vert.spv","data/shaders/water/frag.spv","data/shaders/water/tesc.spv","data/shaders/water/tese.spv",PIPELINE_TYPE::WATER);
 
-        descriptor_sets_.resize(MAX_FRAMES_IN_FLIGHT);
-        descriptor_sets_ = allocate_descriptor_sets();
-        update_descriptor_sets();
-
-
-        //first 14 meshes MUST be terrain
-        createMesh("data/meshes/00.gltf");
-        createMesh("data/meshes/01.gltf");
-        createMesh("data/meshes/02.gltf");
-        createMesh("data/meshes/03.gltf");
-        createMesh("data/meshes/04.gltf");
-        createMesh("data/meshes/05.gltf");
-        createMesh("data/meshes/06.gltf");
-        createMesh("data/meshes/07.gltf");
-        createMesh("data/meshes/08.gltf");
-        createMesh("data/meshes/09.gltf");
-        createMesh("data/meshes/10.gltf");
-        createMesh("data/meshes/11.gltf");
-        createMesh("data/meshes/12.gltf");
-        createMesh("data/meshes/13.gltf");
-
-        //15th mesh aka meshes_[14] must be the water
-        createMesh("data/meshes/plane256.gltf");
 
 
         //create texture atlas and image view
@@ -157,6 +134,39 @@ public:
         sci.anisotropyEnable = vk::False;
         sci.mipmapMode = vk::SamplerMipmapMode::eNearest;
         sci.unnormalizedCoordinates = vk::False;
+        texture_atlas_sampler_ = device_.createSampler(sci);
+        ///////////////
+
+
+
+        descriptor_sets_.resize(MAX_FRAMES_IN_FLIGHT);
+        descriptor_sets_ = allocate_descriptor_sets();
+        update_descriptor_sets();
+
+
+        //first 14 meshes MUST be terrain
+        createMesh("data/meshes/00.gltf");
+        createMesh("data/meshes/01.gltf");
+        createMesh("data/meshes/02.gltf");
+        createMesh("data/meshes/03.gltf");
+        createMesh("data/meshes/04.gltf");
+        createMesh("data/meshes/05.gltf");
+        createMesh("data/meshes/06.gltf");
+        createMesh("data/meshes/07.gltf");
+        createMesh("data/meshes/08.gltf");
+        createMesh("data/meshes/09.gltf");
+        createMesh("data/meshes/10.gltf");
+        createMesh("data/meshes/11.gltf");
+        createMesh("data/meshes/12.gltf");
+        createMesh("data/meshes/13.gltf");
+
+        //15th mesh aka meshes_[14] must be the water
+        createMesh("data/meshes/plane256.gltf");
+
+
+
+
+
 
 
     }
@@ -207,8 +217,10 @@ public:
         }
 
         device_.destroyImageView(texture_atlas_view_);
+        device_.destroySampler(texture_atlas_sampler_);
 
         memory_manager_.destroyImage(texture_atlas_);
+
 
 
 
@@ -541,12 +553,18 @@ private:
     {
         vk::DescriptorPoolSize dps;
         dps.setType(vk::DescriptorType::eStorageBuffer);
-        dps.setDescriptorCount(32 * MAX_FRAMES_IN_FLIGHT);
+        dps.setDescriptorCount(31 * MAX_FRAMES_IN_FLIGHT);
+
+        vk::DescriptorPoolSize tps;
+        tps.setType(vk::DescriptorType::eCombinedImageSampler);
+        tps.setDescriptorCount(1 * MAX_FRAMES_IN_FLIGHT);
+
+        std::array t{dps,tps};
 
         vk::DescriptorPoolCreateInfo dpci;
         dpci.setFlags(vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind);
         dpci.setMaxSets(static_cast<uint32_t>(PIPELINE_TYPE::NUM_PIPELINE_TYPES) * MAX_FRAMES_IN_FLIGHT);
-        dpci.setPoolSizes(dps);
+        dpci.setPoolSizes(t);
         descriptor_pool_ = device_.createDescriptorPool(dpci);
     }
 
@@ -560,6 +578,11 @@ private:
             dslb[i].setDescriptorType(vk::DescriptorType::eStorageBuffer);
             dslb[i].setStageFlags(vk::ShaderStageFlagBits::eAll);
         }
+        dslb[11].binding = 11;
+        dslb[11].descriptorCount = 1;
+        dslb[11].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        dslb[11].pImmutableSamplers = nullptr;
+
 
 
         std::array<vk::DescriptorBindingFlags, 32> bf =
@@ -837,8 +860,9 @@ private:
 
         for(auto f = 0ul; f < MAX_FRAMES_IN_FLIGHT; ++f)
         {
-            std::vector<vk::WriteDescriptorSet> wds(11);
+            std::vector<vk::WriteDescriptorSet> wds(12);
             std::vector<vk::DescriptorBufferInfo> dbis(wds.size());
+            std::vector<vk::DescriptorImageInfo> diis(1);
             for(auto bindingNum = 0ul; bindingNum < wds.size(); ++bindingNum)
             {
                 auto& wd = wds[bindingNum];
@@ -855,6 +879,24 @@ private:
                 wd.setBufferInfo(dbi);
 
             }
+            for(auto bindingNum = 11ul; bindingNum < 12; ++bindingNum)
+            {
+                auto& wd = wds[bindingNum];
+                auto& dii = diis[bindingNum];
+                dii.setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+                dii.setImageView(texture_atlas_view_);
+                dii.setSampler(texture_atlas_sampler_);
+                wd.setDstSet(descriptor_sets_[f]);
+                wd.setDstBinding(bindingNum);
+                wd.setDstArrayElement(0);
+                wd.setDescriptorType(vk::DescriptorType::eCombinedImageSampler);
+                wd.setDescriptorCount(1);
+                wd.setImageInfo(dii);
+
+            }
+
+
+
             device_.updateDescriptorSets(wds,{});
         }
     }
@@ -913,6 +955,7 @@ private:
 
     vk::Image texture_atlas_;
     vk::ImageView texture_atlas_view_;
+    vk::Sampler texture_atlas_sampler_;
 
     FixedVector<RenderObject,MAX_OBJECTS_COUNT> render_objects_;
     FixedVector<Material, MAX_OBJECTS_COUNT> materials_;
