@@ -180,6 +180,8 @@ public:
             int offset = 0;
             int sizeInBytes = width * height * 4;
 
+
+            //create staging buufer with pixel data inside
             VkBuffer stagingbuffer = {};
             VmaAllocation stagingbufferAllocation = {};
             VmaAllocationInfo stagingbufferAllocationInfo = {};
@@ -202,19 +204,70 @@ public:
             vmaFlushAllocation(allocator_, stagingbufferAllocation, offset, sizeInBytes);
 
 
+            vk::CommandBufferBeginInfo cbbi;
+            cbbi.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+            transfer_command_buffer_.begin(cbbi);
 
 
+            //copy staging buffer to image
+            vk::ImageSubresourceRange isrr = {};
+            isrr.aspectMask = vk::ImageAspectFlagBits::eColor;
+            isrr.baseMipLevel = 0;
+            isrr.levelCount = 1;
+            isrr.baseArrayLayer = 0;
+            isrr.layerCount = 1;
+
+            //transfer image to transferdst layout using a pipeline barrier
+            vk::ImageMemoryBarrier imbTransfer = {};
+            imbTransfer.oldLayout = vk::ImageLayout::eUndefined;
+            imbTransfer.newLayout = vk::ImageLayout::eTransferDstOptimal;
+            imbTransfer.image = img;
+            imbTransfer.subresourceRange = isrr;
+            imbTransfer.srcAccessMask = vk::AccessFlagBits::eNone;
+            imbTransfer.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+            imbTransfer.srcQueueFamilyIndex = vk::QueueFamilyIgnored;
+            imbTransfer.dstQueueFamilyIndex = vk::QueueFamilyIgnored;
+
+            transfer_command_buffer_.pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, {}, {},{},imbTransfer);
 
 
+            //copy pixel data to image from staging buffer
+            vk::BufferImageCopy bic = {};
+            bic.bufferOffset = 0;
+            bic.bufferRowLength = 0;
+            bic.bufferImageHeight = height;
+
+            bic.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+            bic.imageSubresource.mipLevel = 0;
+            bic.imageSubresource.baseArrayLayer = 0;
+            bic.imageSubresource.layerCount = 0;
+            bic.imageExtent = vk::Extent3D{width,height,1};
+
+            transfer_command_buffer_.copyBufferToImage(stagingbuffer,img,vk::ImageLayout::eTransferDstOptimal,bic);
+
+            //transition image layout to shader readonly optimal
+            vk::ImageMemoryBarrier imbReadable = {};
+            imbReadable.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+            imbReadable.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+            imbReadable.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+            imbReadable.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            imbReadable.srcQueueFamilyIndex = vk::QueueFamilyIgnored;
+            imbReadable.dstQueueFamilyIndex = vk::QueueFamilyIgnored;
+            imbReadable.image = img;
+            imbReadable.subresourceRange = isrr;
+
+
+            transfer_command_buffer_.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {},{},imbTransfer);
+
+            transfer_command_buffer_.end();
 
             vk::SubmitInfo si;
             si.setCommandBuffers(transfer_command_buffer_);
             transfer_queue_.submit(si);
+
             transfer_queue_.waitIdle();
 
-
             vmaDestroyBuffer(allocator_,stagingbuffer, stagingbufferAllocation);
-
         }
 
 

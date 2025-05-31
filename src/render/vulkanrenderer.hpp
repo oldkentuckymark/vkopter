@@ -140,6 +140,23 @@ public:
 
         stbi_image_free(data);
 
+        vk::ImageViewCreateInfo ivci = {};
+        ivci.image = texture_atlas_;
+        ivci.viewType = vk::ImageViewType::e2D;
+        ivci.format = vk::Format::eR8G8B8A8Unorm;
+        ivci.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+        ivci.subresourceRange.baseArrayLayer = 0;
+        ivci.subresourceRange.baseMipLevel = 0;
+        ivci.subresourceRange.layerCount = 1;
+        ivci.subresourceRange.levelCount = 1;
+        texture_atlas_view_ = device_.createImageView(ivci);
+
+        vk::SamplerCreateInfo sci = {};
+        sci.minFilter = vk::Filter::eNearest;
+        sci.magFilter = vk::Filter::eNearest;
+        sci.anisotropyEnable = vk::False;
+        sci.mipmapMode = vk::SamplerMipmapMode::eNearest;
+        sci.unnormalizedCoordinates = vk::False;
 
 
     }
@@ -188,6 +205,8 @@ public:
         {
             removeMesh(m);
         }
+
+        device_.destroyImageView(texture_atlas_view_);
 
         memory_manager_.destroyImage(texture_atlas_);
 
