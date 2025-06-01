@@ -20,7 +20,6 @@
 #include "game/camera.hpp"
 
 
-
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/transform2.hpp>
@@ -112,8 +111,9 @@ public:
         //create texture atlas and image view
         int cif = 0;
         auto* data = stbi_load("data/textures/texture.png",&texture_atlas_width_,&texture_atlas_height_,&cif,4);
+        auto* l = stbi_failure_reason();
 
-        texture_atlas_ = memory_manager_.createImage(texture_atlas_width_,texture_atlas_height_, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst);
+        texture_atlas_ = memory_manager_.createImage(texture_atlas_width_,texture_atlas_height_, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,data);
 
         stbi_image_free(data);
 
@@ -882,16 +882,18 @@ private:
             for(auto bindingNum = 11ul; bindingNum < 12; ++bindingNum)
             {
                 auto& wd = wds[bindingNum];
-                auto& dii = diis[bindingNum];
+                auto& dii = diis[0];
                 dii.setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
                 dii.setImageView(texture_atlas_view_);
                 dii.setSampler(texture_atlas_sampler_);
+
                 wd.setDstSet(descriptor_sets_[f]);
                 wd.setDstBinding(bindingNum);
                 wd.setDstArrayElement(0);
                 wd.setDescriptorType(vk::DescriptorType::eCombinedImageSampler);
                 wd.setDescriptorCount(1);
                 wd.setImageInfo(dii);
+
 
             }
 

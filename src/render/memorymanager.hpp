@@ -240,10 +240,11 @@ public:
             bic.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
             bic.imageSubresource.mipLevel = 0;
             bic.imageSubresource.baseArrayLayer = 0;
-            bic.imageSubresource.layerCount = 0;
+            bic.imageSubresource.layerCount = 1;
             bic.imageExtent = vk::Extent3D{width,height,1};
 
             transfer_command_buffer_.copyBufferToImage(stagingbuffer,img,vk::ImageLayout::eTransferDstOptimal,bic);
+
 
             //transition image layout to shader readonly optimal
             vk::ImageMemoryBarrier imbReadable = {};
@@ -257,7 +258,7 @@ public:
             imbReadable.subresourceRange = isrr;
 
 
-            transfer_command_buffer_.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {},{},imbTransfer);
+            transfer_command_buffer_.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {},{},imbReadable);
 
             transfer_command_buffer_.end();
 
@@ -266,6 +267,7 @@ public:
             transfer_queue_.submit(si);
 
             transfer_queue_.waitIdle();
+            device_.waitIdle();
 
             vmaDestroyBuffer(allocator_,stagingbuffer, stagingbufferAllocation);
         }
