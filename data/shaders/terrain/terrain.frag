@@ -11,6 +11,7 @@ layout(location = 6) in vec3 viewDir;
 layout(location = 7) in vec3 lightDir;
 layout(location = 8) in float lightDistance2;
 layout(location = 9) in vec3 fragPos;
+layout(location = 10) flat in uint grd;
 
 void main()
 {
@@ -29,5 +30,21 @@ void main()
     vec3 diffuse = diff * light.diffuse.xyz;
 
     vec3 result = (((light.ambient.xyz*vec3(1.0,0.33,0.1)) + diffuse + specular) * vec3(0.33,0.33,0.1));
-    outColor = texture(texsamp,interpolatedTexCoord);
+
+    vec2 tc = interpolatedTexCoord.xy;
+    
+    
+    tc.x /= textureWidth;
+    tc.y /= textureHeight;
+    tc.x *= textureTileWidth;
+    tc.y *= textureTileHeight;
+
+
+    tc.x += mod(grd,textureNumTilesX) * (tileCoordWidth);
+    tc.y += floor(grd / textureNumTilesX) / textureNumTilesY;
+
+    vec4 sam = texture(texsamp,tc);
+
+
+    outColor = sam * sam.a;
 }

@@ -18,9 +18,9 @@ public:
        grid_(g),
        dis_percent_(0,100),
        dis_ew_(-EventWindow<S>::SIZE,EventWindow<S>::SIZE),
-       dis_grid_x_(0,grid_.getWidth()-1),
-       dis_grid_y_(0,grid_.getHeight()-1),
-       dis_grid_z_(0,grid_.getDepth()-1),
+       dis_grid_x_(0,grid_.WIDTH-1),
+       dis_grid_y_(0,grid_.HEIGHT-1),
+       dis_grid_z_(0,grid_.DEPTH-1),
        dis_bool_(0,1),
        funcs_(get_funcs()),
        gen_(87735410)
@@ -40,7 +40,9 @@ public:
    {
        if(grid_(x,y,z).type)
        {
+           return;//copy EW is broken!!!!
            EventWindow<S> ew = grid_.template copyEW<S>(x,y,z);
+
            //int db = grid_(x,y,z).type;
            (this->*(funcs_[grid_(x,y,z).type])) (ew);
            grid_.template pasteEW<S>(ew,x,y,z);
@@ -147,7 +149,8 @@ private:
    }
    auto f02(EventWindow<S>& ew) -> void
    {
-       ew.siteMemory(0,0,0,0);
+       return;
+       //ew.siteMemory(0,0,0,0);
        //first thing, fix road, as it might not actually be what it says RN
        bool fixed = false;
 
@@ -175,11 +178,12 @@ private:
        {
            possibleTypes = {RoadDiagTL, RoadDiagTR, Road4Way, RoadEWN, RoadNSE, RoadNSW};
        }
-       ew(cx,cy) << possibleTypes;
+       //ew(cx,cy) << possibleTypes;
 
    }
    auto f03(EventWindow<S>& ew) -> void
    {
+       return;
        int cx = 1, cy = 0;
        bool const lookWest = coin();
        if(lookWest) { cx = -1; }

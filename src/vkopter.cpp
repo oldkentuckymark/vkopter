@@ -21,6 +21,8 @@
 #include "render/renderobject.hpp"
 #include "render/vulkanrenderer.hpp"
 #include "vulkanwindow.hpp"
+#include "game/citygen/grid.hpp"
+#include "game/citygen/atomupdater.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 
@@ -34,12 +36,22 @@ auto main(int argc, char **argv) -> int
     vkopter::VulkanWindow window(1280, 720);
     vkopter::render::VulkanRenderer renderer(window, window.getMemoryManager());
 
+    vkopter::game::citygen::Grid<256, 256, 1> grid;
+    vkopter::game::citygen::AtomUpdater<256, 256, 1, 4> au(grid);
+    grid.clear();
+    grid(16, 16, 0) = vkopter::game::citygen::RoadNS;
+    grid(17,16,0) = vkopter::game::citygen::Grass;
+
+
+
+
+
     vkopter::game::Terrain terrain;
     terrain.load("data/maps/test/hm.bmp");
     terrain.makeValid();
     renderer.resizeTerrain(terrain.getWidth(), terrain.getHeight());
     renderer.updateTerrain(terrain.termapData(), terrain.altmapData());
-    //terrain.clear();
+    renderer.updateGrid<grid.WIDTH,grid.HEIGHT,grid.DEPTH>(grid.atoms());
 
     auto mesh0 = renderer.createMesh("data/meshes/untitled.gltf");
     auto mat0 = renderer.createMaterial();
@@ -125,9 +137,15 @@ auto main(int argc, char **argv) -> int
         {
             cam0ref.move({0.0f,1.0f,0.0f});
         }
+
+        for(auto i = 0ul; i < 1000; ++i)
+        {
+            au.update(16,16,0);
+        }
+
         cam0ref.update();
 
-
+        renderer.updateGrid<grid.WIDTH,grid.HEIGHT,grid.DEPTH>(grid.atoms());
         renderer.startNextFrame();
         //std::cout << "x: " << cam0ref.position_.x << "  y: " << cam0ref.position_.y << " z: " << cam0ref.position_.z << "\n";
     }

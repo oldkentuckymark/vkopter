@@ -51,8 +51,8 @@ public:
         if (duration_cast<milliseconds>(t2 - t1).count() > 16) {
             SDL_RenderClear(ren);
 
-            for (auto x = 0; x < grid.getWidth(); ++x) {
-                for (auto y = 0; y < grid.getHeight(); ++y) {
+            for (auto x = 0; x < grid.WIDTH; ++x) {
+                for (auto y = 0; y < grid.HEIGHT; ++y) {
                     SDL_Rect dst{x * IMAGE_SIZE, y * IMAGE_SIZE, (IMAGE_SIZE), (IMAGE_SIZE)};
                     SDL_RenderCopy(ren, images[grid(x, y, 0).type], nullptr, &dst);
                 }

@@ -31,8 +31,8 @@ void main()
     float diff = max(dot(norm, light.direction.xyz), 0.0);
     vec3 diffuse = diff * light.diffuse.xyz;
 
-    vec4 sam = texture(texsamp,interpolatedTexCoord);
-
+    //vec4 sam = texture(texsamp,interpolatedTexCoord);
+    vec4 sam = vec4(1.0,1.0,1.0,1.0);
     vec3 result = (((light.ambient.xyz*material.ambient.xyz) + diffuse + specular) * material.diffuse.xyz);
     outColor = vec4(result, 1.0) * sam;
 

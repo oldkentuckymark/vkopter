@@ -18,6 +18,7 @@
 #include "light.hpp"
 #include "renderobject.hpp"
 #include "game/camera.hpp"
+#include "game/citygen/grid.hpp"
 
 
 #include <glm/glm.hpp>
@@ -96,6 +97,8 @@ public:
         terrain_alts_buffers_.resize(MAX_FRAMES_IN_FLIGHT);
         terrain_ters_buffers_.resize(MAX_FRAMES_IN_FLIGHT);
 
+        grid_buffers_.resize(MAX_FRAMES_IN_FLIGHT);
+
         init_buffers();
         init_descriptor_pool();
 
@@ -111,7 +114,6 @@ public:
         //create texture atlas and image view
         int cif = 0;
         auto* data = stbi_load("data/textures/texture.png",&texture_atlas_width_,&texture_atlas_height_,&cif,4);
-        auto* l = stbi_failure_reason();
 
         texture_atlas_ = memory_manager_.createImage(texture_atlas_width_,texture_atlas_height_, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,data);
 
@@ -521,7 +523,14 @@ public:
         terrain_height_ = h;
     }
 
-
+    template<uint64_t W, uint64_t H, uint64_t D>
+    auto updateGrid(std::array<game::citygen::Atom, W*H*D>& atoms) -> void
+    {
+        for(auto& b : grid_buffers_)
+        {
+            memory_manager_.updateBuffer(b, 0, sizeof(game::citygen::Atom)*W*H*D, atoms.data());
+        }
+    }
 
 private:
 
@@ -544,6 +553,8 @@ private:
             indicies_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eIndexBuffer,sizeof(uint32_t) * MAX_VERTEX_COUNT);
             draw_commands_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eIndirectBuffer,sizeof(vk::DrawIndexedIndirectCommand) * MAX_OBJECTS_COUNT);
 
+            grid_buffers_[i] = memory_manager_.createBuffer(vk::BufferUsageFlagBits::eStorageBuffer, MAX_TERRAIN_WIDTH_ * MAX_TERRAIN_HEIGHT_*sizeof(game::citygen::Atom));
+
         }
 
 
@@ -553,17 +564,17 @@ private:
     {
         vk::DescriptorPoolSize dps;
         dps.setType(vk::DescriptorType::eStorageBuffer);
-        dps.setDescriptorCount(31 * MAX_FRAMES_IN_FLIGHT);
+        dps.setDescriptorCount(32 * MAX_FRAMES_IN_FLIGHT);
 
         vk::DescriptorPoolSize tps;
         tps.setType(vk::DescriptorType::eCombinedImageSampler);
-        tps.setDescriptorCount(1 * MAX_FRAMES_IN_FLIGHT);
+        tps.setDescriptorCount(8 * MAX_FRAMES_IN_FLIGHT);
 
         std::array t{dps,tps};
 
         vk::DescriptorPoolCreateInfo dpci;
         dpci.setFlags(vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind);
-        dpci.setMaxSets(static_cast<uint32_t>(PIPELINE_TYPE::NUM_PIPELINE_TYPES) * MAX_FRAMES_IN_FLIGHT);
+        dpci.setMaxSets(4);
         dpci.setPoolSizes(t);
         descriptor_pool_ = device_.createDescriptorPool(dpci);
     }
@@ -578,10 +589,10 @@ private:
             dslb[i].setDescriptorType(vk::DescriptorType::eStorageBuffer);
             dslb[i].setStageFlags(vk::ShaderStageFlagBits::eAll);
         }
-        dslb[11].binding = 11;
-        dslb[11].descriptorCount = 1;
-        dslb[11].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-        dslb[11].pImmutableSamplers = nullptr;
+        dslb[12].binding = 12;
+        dslb[12].descriptorCount = 1;
+        dslb[12].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        dslb[12].pImmutableSamplers = nullptr;
 
 
 
@@ -856,11 +867,12 @@ private:
         buffers[8] = lights_buffers_;
         buffers[9] = terrain_ters_buffers_;
         buffers[10] = terrain_alts_buffers_;
+        buffers[11] = grid_buffers_;
 
 
         for(auto f = 0ul; f < MAX_FRAMES_IN_FLIGHT; ++f)
         {
-            std::vector<vk::WriteDescriptorSet> wds(12);
+            std::vector<vk::WriteDescriptorSet> wds(13);
             std::vector<vk::DescriptorBufferInfo> dbis(wds.size());
             std::vector<vk::DescriptorImageInfo> diis(1);
             for(auto bindingNum = 0ul; bindingNum < wds.size(); ++bindingNum)
@@ -879,7 +891,7 @@ private:
                 wd.setBufferInfo(dbi);
 
             }
-            for(auto bindingNum = 11ul; bindingNum < 12; ++bindingNum)
+            for(auto bindingNum = 12ul; bindingNum < 13ul; ++bindingNum)
             {
                 auto& wd = wds[bindingNum];
                 auto& dii = diis[0];
@@ -985,6 +997,8 @@ private:
 
     per_frame_in_flight_vector<vk::Buffer> draw_commands_buffers_;
 
+    per_frame_in_flight_vector<vk::Buffer> grid_buffers_;
+
     //push constants
     struct PushConstantStruct
     {
@@ -1030,8 +1044,8 @@ private:
     uint32_t terrain_width_ = 0;
     uint32_t terrain_height_ = 0;
 
-    uint32_t const MAX_TERRAIN_WIDTH_ = 512;
-    uint32_t const MAX_TERRAIN_HEIGHT_ = 512;
+    uint32_t const MAX_TERRAIN_WIDTH_ = 256;
+    uint32_t const MAX_TERRAIN_HEIGHT_ = 256;
     uint32_t const TERRAIN_MESH_INDEX_COUNT = 36;
     uint32_t const TERRAIN_MESH_VERT_COUNT = 36;
 

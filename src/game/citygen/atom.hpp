@@ -9,7 +9,7 @@
 namespace vkopter::game::citygen
 {
 
-enum Type : uint8_t
+enum Type : uint32_t
 {
     Empty = 0,
     Grass = 1,
@@ -36,7 +36,7 @@ class Atom
 public:
     Type type = Empty;
 
-    uint8_t data = 0;
+    uint32_t data = 0;
 
     auto static generateRange(uint8_t const first, uint8_t const last) -> std::vector<Type>
     {
