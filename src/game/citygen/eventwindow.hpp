@@ -13,7 +13,7 @@ public:
 
     auto operator () (const int32_t x, const int32_t y, const int32_t z = 0) -> Atom&
     {
-
+        //fix adressing for negative x,y,z
         return atoms_[x + y * S + z * S * S];
 
     }

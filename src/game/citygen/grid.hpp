@@ -44,16 +44,17 @@ public:
             {
                 for(int32_t ewz = -EventWindow<S>::SIZE; ewz <= EventWindow<S>::SIZE; ++ewz)
                 {
+                    //
                     if(isInBounds(ewx+x, ewy+y,ewz+z))
                     {
-                        win(ewx,ewy,ewz) = (*this)(ewx+x, ewy+y,ewz+z);
+                        //win(ewx,ewy,ewz) = (*this)(ewx+x, ewy+y,ewz+z);
                         //win.siteMemory(0,ewx,ewy,ewz) = siteMemory(0,ewx+x, ewy+y,ewz+z);
                         //win.siteMemory(1,ewx,ewy,ewz) = siteMemory(1,ewx+x, ewy+y,ewz+z);
 
                     }
                     else
                     {
-                        win(ewx,ewy,ewz) = Empty;
+                        //win(ewx,ewy,ewz) = Empty;
                         //win.siteMemory(0,ewx,ewy,ewz) = 0;
                         //win.siteMemory(1,ewx,ewy,ewz) = 0;
 
