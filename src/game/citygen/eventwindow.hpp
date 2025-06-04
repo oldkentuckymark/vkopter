@@ -2,6 +2,8 @@
 
 #include "atom.hpp"
 
+#include <iostream>
+
 namespace vkopter::game::citygen
 {
 
@@ -14,8 +16,12 @@ public:
     auto operator () (const int32_t x, const int32_t y, const int32_t z = 0) -> Atom&
     {
         //fix adressing for negative x,y,z
-        return atoms_[x + y * S + z * S * S];
-
+        constexpr auto DIM = (S*2)+1;
+        int32_t const x2 = x+S;
+        int32_t const y2 = y+S;
+        int32_t const z2 = z+S;
+        auto g = x2 + y2 * DIM + z2 * DIM * DIM;
+        return atoms_[x2 + y2 * DIM + z2 * DIM * DIM];
     }
 
     [[nodiscard]] auto contains(const std::vector<Type>& l) const -> bool
@@ -36,7 +42,7 @@ public:
 
 
 private:
-    std::array<Atom, ((SIZE*2)+1)*3> atoms_;
+    std::array<Atom, ((SIZE*2)+1)*((SIZE*2)+1)*((SIZE*2)+1)> atoms_;
 
 };
 

@@ -107,13 +107,12 @@ private:
             glm::vec2  tex = pTex[i];
             glm::vec3  norm = pNorm[i];
 
-            float t = pos.y;
-            pos.y = -pos.z;
-            pos.z = t;
 
-            t = norm.y;
-            norm.y = -norm.z;
-            norm.z = t;
+             pos.y = -pos.y;
+             pos.z = -pos.z;
+
+             norm.y = -norm.y;
+             norm.z = -norm.z;
 
             positions_.emplace_back(pos,1.0f);
             texcoords_.emplace_back(tex,0.0f,0.0f);

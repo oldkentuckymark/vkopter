@@ -111,7 +111,7 @@ int main(int argc, char **argv)
                     break;
                 case SDLK_c:
                     grid.clear();
-                    grid(16, 16, 0) = vkopter::game::citygen::RoadNS;
+                    grid(16, 16, 0) = vkopter::game::citygen::Grass;
                     break;
                 default:
                     break;

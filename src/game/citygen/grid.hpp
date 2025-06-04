@@ -28,15 +28,12 @@ public:
     auto operator()(const int32_t x, const int32_t y, const int32_t z = 0) -> Atom&
     {
         return atoms_[x + y * W + z * W * H];
-        //return atoms[z].at(x,y);
     }
-    /////////////////////////////
-    ///need fix copy EW and paste EW
+
     template<int32_t S>
     auto copyEW(int32_t const x, int32_t const y, int32_t const z = 0) -> EventWindow<S>
     {
-        EventWindow<S> win;
-
+        EventWindow<S> win, win2, win3;
 
         for(int32_t ewx = -EventWindow<S>::SIZE; ewx <= EventWindow<S>::SIZE; ++ewx)
         {
@@ -44,17 +41,16 @@ public:
             {
                 for(int32_t ewz = -EventWindow<S>::SIZE; ewz <= EventWindow<S>::SIZE; ++ewz)
                 {
-                    //
                     if(isInBounds(ewx+x, ewy+y,ewz+z))
                     {
-                        //win(ewx,ewy,ewz) = (*this)(ewx+x, ewy+y,ewz+z);
+                        win(ewx,ewy,ewz) = (*this)(ewx+x, ewy+y,ewz+z);
                         //win.siteMemory(0,ewx,ewy,ewz) = siteMemory(0,ewx+x, ewy+y,ewz+z);
                         //win.siteMemory(1,ewx,ewy,ewz) = siteMemory(1,ewx+x, ewy+y,ewz+z);
 
                     }
                     else
                     {
-                        //win(ewx,ewy,ewz) = Empty;
+                        win(ewx,ewy,ewz) = Empty;
                         //win.siteMemory(0,ewx,ewy,ewz) = 0;
                         //win.siteMemory(1,ewx,ewy,ewz) = 0;
 
@@ -104,7 +100,7 @@ public:
 
     auto clear(const Type& t = Empty) -> void
     {
-        std::fill(atoms_.begin(),atoms_.end(),t);
+        std::fill(atoms_.begin(),atoms_.end(),Atom{t,0});
     }
 
 

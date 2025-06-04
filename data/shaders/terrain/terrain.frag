@@ -32,13 +32,11 @@ void main()
     vec3 result = (((light.ambient.xyz*vec3(1.0,0.33,0.1)) + diffuse + specular) * vec3(0.33,0.33,0.1));
 
     vec2 tc = interpolatedTexCoord.xy;
-    
-    
+        
     tc.x /= textureWidth;
     tc.y /= textureHeight;
     tc.x *= textureTileWidth;
     tc.y *= textureTileHeight;
-
 
     tc.x += mod(grd,textureNumTilesX) * (tileCoordWidth);
     tc.y += floor(grd / textureNumTilesX) / textureNumTilesY;

@@ -33,17 +33,12 @@ public:
    auto operator=(AtomUpdater&&) -> AtomUpdater& = default;
    ~AtomUpdater() = default;
 
-   //explicit AtomUpdater(AtomUpdater const & that) = default;
-
 
    auto update(int32_t const x, int32_t const y, int32_t const z = 0) -> void
    {
        if(grid_(x,y,z).type)
        {
-           return;//copy EW is broken!!!!
            EventWindow<S> ew = grid_.template copyEW<S>(x,y,z);
-
-           //int db = grid_(x,y,z).type;
            (this->*(funcs_[grid_(x,y,z).type])) (ew);
            grid_.template pasteEW<S>(ew,x,y,z);
 
@@ -149,13 +144,13 @@ private:
    }
    auto f02(EventWindow<S>& ew) -> void
    {
-       return;
+       //return;
        //ew.siteMemory(0,0,0,0);
        //first thing, fix road, as it might not actually be what it says RN
        bool fixed = false;
 
        auto EWtypes = {RoadEW, RoadEWN, RoadEWS, Road4Way};
-       if(ew(1,0) == EWtypes)
+       //if(ew(1,0) == EWtypes)
        {
 
        }
@@ -178,12 +173,11 @@ private:
        {
            possibleTypes = {RoadDiagTL, RoadDiagTR, Road4Way, RoadEWN, RoadNSE, RoadNSW};
        }
-       //ew(cx,cy) << possibleTypes;
+       ew(cx,cy) << possibleTypes;
 
    }
    auto f03(EventWindow<S>& ew) -> void
    {
-       return;
        int cx = 1, cy = 0;
        bool const lookWest = coin();
        if(lookWest) { cx = -1; }

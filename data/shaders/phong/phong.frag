@@ -34,7 +34,7 @@ void main()
     //vec4 sam = texture(texsamp,interpolatedTexCoord);
     vec4 sam = vec4(1.0,1.0,1.0,1.0);
     vec3 result = (((light.ambient.xyz*material.ambient.xyz) + diffuse + specular) * material.diffuse.xyz);
-    outColor = vec4(result, 1.0) * sam;
+    outColor = vec4(result, 1.0);// * sam;
 
 
     //outColor = material.diffuse;

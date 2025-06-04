@@ -40,10 +40,10 @@ auto main(int argc, char **argv) -> int
     vkopter::game::citygen::AtomUpdater<256, 256, 1, 4> au(grid);
     grid.clear();
     grid(16, 16, 0) = vkopter::game::citygen::RoadNS;
-    grid(17,16,0) = vkopter::game::citygen::Grass;
-
-
-
+    for(auto i = 0ul; i < 1000000; ++i)
+    {
+        au.updateRnd();
+    }
 
 
     vkopter::game::Terrain terrain;
@@ -115,11 +115,11 @@ auto main(int argc, char **argv) -> int
         }
         if (keys[SDL_SCANCODE_W])
         {
-            cam0ref.move({0.0f,0.0f,1.0f});
+            cam0ref.move({0.0f,0.0f,0.1f});
         }
         if (keys[SDL_SCANCODE_S])
         {
-            cam0ref.move({0.0f,0.0f,-1.0f});
+            cam0ref.move({0.0f,0.0f,-0.1f});
         }
         if (keys[SDL_SCANCODE_A])
         {
@@ -140,14 +140,14 @@ auto main(int argc, char **argv) -> int
 
         for(auto i = 0ul; i < 1000; ++i)
         {
-            au.update(16,16,0);
+            au.updateRnd();
         }
 
         cam0ref.update();
 
         renderer.updateGrid<grid.WIDTH,grid.HEIGHT,grid.DEPTH>(grid.atoms());
         renderer.startNextFrame();
-        //std::cout << "x: " << cam0ref.position_.x << "  y: " << cam0ref.position_.y << " z: " << cam0ref.position_.z << "\n";
+
     }
 
     renderer.removeRenderObject(ro0ref);

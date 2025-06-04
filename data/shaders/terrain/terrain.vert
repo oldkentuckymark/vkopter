@@ -50,6 +50,9 @@ void main()
     interpolatedNormal = mat3(transpose(inverse(mat4(1.0)))) * newNorm.xyz;
 
 	vec2 tc = texcoords[(tile*terrainNumVerts)+vdx].xy;
+	//tc.y = -tc.y;
+	//tc.x = -tc.x;
+
 	interpolatedTexCoord = tc;
 
 	gl_Position = cameras[0].proj * cameras[0].view * newVert;
