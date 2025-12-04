@@ -24,7 +24,7 @@
 #include "game/citygen/grid.hpp"
 #include "game/citygen/atomupdater.hpp"
 
-#include <glm/ext/matrix_transform.hpp>
+#include "glm/ext/matrix_transform.hpp"
 
 #include "game/terrain.hpp"
 

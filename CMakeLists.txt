@@ -10,6 +10,8 @@ file(GLOB_RECURSE JOLT_HEADERS CONFIGURE_DEPENDS "src/Jolt/*.h")
 
 file(GLOB_RECURSE JOLT_SOURCES CONFIGURE_DEPENDS "src/Jolt/*.cpp")
 
+#file(GLOB_RECURSE GLM_HEADERS CONFIGURE_DEPENDS "src/glm/*")
+
 set(LICENCES
 	src/game/entt/LICENSE
 	src/Jolt/LICENSE
@@ -145,6 +147,7 @@ set(ENTT_HEADERS
 
 
 add_executable(vkopter
+	${GLM_HEADERS}
 	${ENTT_HEADERS}
 	${JOLT_HEADERS}
 	${JOLT_SOURCES}
